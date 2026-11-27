@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Invisible Navidad</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; text-align: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        button { padding: 15px; font-size: 1.1rem; border-radius: 8px; border: none; background: #d32f2f; color: white; cursor: pointer; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); color: white; flex-direction: column; justify-content: center; align-items: center; }
+        .nombre-tocado { font-size: 2.5rem; font-weight: bold; color: #ffeb3b; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <h1 id="titulo">🎄 Amigo Invisible 🎄</h1>
+    <div id="contenido"></div>
+
+    <div id="modal">
+        <p>Te ha tocado regalar a:</p>
+        <div class="nombre-tocado" id="resultado"></div>
+        <p id="contador">Se cerrará en 5s...</p>
+    </div>
+
+    <script>
+        // Edita aquí nombres y familias antes de generar el enlace
+        const PARTICIPANTES = [
+            { nombre: "Papá 1", familia: 1 }, { nombre: "Mamá 1", familia: 1 }, { nombre: "Niño 1", familia: 1 },
+            { nombre: "Papá 2", familia: 2 }, { nombre: "Mamá 2", familia: 2 }, { nombre: "Niño 2", familia: 2 },
+            { nombre: "Papá 3", familia: 3 }, { nombre: "Mamá 3", familia: 3 }, { nombre: "Niño 3", familia: 3 }
+        ];
+
+        const params = new URLSearchParams(window.location.search);
+        const dataParam = params.get('data');
+        const contenedor = document.getElementById('contenido');
+
+        if (!dataParam) {
+            contenedor.innerHTML = `<p>Pulsa para generar el sorteo y obtener el enlace para WhatsApp:</p>
+                                    <button onclick="generarSorteo()">Generar Enlace del Sorteo</button>
+                                    <p id="link-generado" style="word-break: break-all; margin-top:20px;"></p>`;
+        } else {
+            const asignaciones = JSON.parse(decodeURIComponent(atob(dataParam)));
+            const vistos = JSON.parse(localStorage.getItem('vistos_' + dataParam.slice(0, 10)) || '[]');
+
+            contenedor.innerHTML = `<p>Pulsa en tu nombre para ver quién te ha tocado (solo se puede ver una vez):</p><div class="grid" id="grid"></div>`;
+            const grid = document.getElementById('grid');
+
+            Object.keys(asignaciones).forEach(persona => {
+                const btn = document.createElement('button');
+                btn.textContent = persona;
+                if (vistos.includes(persona)) {
+                    btn.disabled = true;
+                    btn.textContent += " (Visto)";
+                }
+                btn.onclick = () => revelar(persona, asignaciones[persona], btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function generarSorteo() {
+            let valido = false;
+            let resultado = {};
+
+            while (!valido) {
+                let receptores = [...PARTICIPANTES].sort(() => Math.random() - 0.5);
+                valido = true;
+                resultado = {};
+
+                for (let i = 0; i < PARTICIPANTES.length; i++) {
+                    const dador = PARTICIPANTES[i];
+                    const receptor = receptores[i];
+                    if (dador.nombre === receptor.nombre || dador.familia === receptor.familia) {
+                        valido = false;
+                        break;
+                    }
+                    resultado[dador.nombre] = receptor.nombre;
+                }
+            }
+
+            const payload = btoa(encodeURIComponent(JSON.stringify(resultado)));
+            const urlFinal = `${window.location.origin}${window.location.pathname}?data=${payload}`;
+            document.getElementById('link-generado').innerHTML = `<strong>Comparte este enlace:</strong><br><a href="${urlFinal}">${urlFinal}</a>`;
+        }
+
+        function revelar(persona, tocado, boton) {
+            const modal = document.getElementById('modal');
+            const contador = document.getElementById('contador');
+            document.getElementById('resultado').textContent = tocado;
+            modal.style.display = 'flex';
+
+            const storageKey = 'vistos_' + dataParam.slice(0, 10);
+            const vistos = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            vistos.push(persona);
+            localStorage.setItem(storageKey, JSON.stringify(vistos));
+
+            boton.disabled = true;
+            boton.textContent += " (Visto)";
+
+            let segundos = 5;
+            contador.textContent = `Se cerrará en ${segundos}s...`;
+            const intervalo = setInterval(() => {
+                segundos--;
+                contador.textContent = `Se cerrará en ${segundos}s...`;
+                if (segundos <= 0) {
+                    clearInterval(intervalo);
+                    modal.style.display = 'none';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
