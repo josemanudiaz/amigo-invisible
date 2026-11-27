@@ -39,4 +39,574 @@
         }
 
         .garland {
-            position:
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 10px;
+            background: linear-gradient(90deg, rgba(20, 61, 34, 0.92), rgba(155, 17, 24, 0.92), rgba(20, 61, 34, 0.92));
+            border-bottom: 2px solid var(--gold);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+            z-index: 20;
+            font-size: 0.95rem;
+            user-select: none;
+        }
+
+        .snowflakes {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .flake {
+            position: absolute;
+            top: -24px;
+            color: rgba(255, 255, 255, 0.35);
+            animation: fall linear infinite;
+            user-select: none;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-24px) translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(52vh) translateX(14px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(108vh) translateX(-10px) rotate(360deg);
+            }
+        }
+
+        .card {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 24px 55px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(244, 180, 26, 0.35);
+            text-align: center;
+            border-top: 7px solid var(--red);
+            border-bottom: 5px solid var(--green);
+        }
+
+        .ribbon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, #fff4d2, #ffe39f);
+            color: #7c4700;
+            border: 1px solid rgba(244, 180, 26, 0.6);
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            margin-bottom: 0.65rem;
+        }
+
+        h1 {
+            margin: 0 0 0.85rem;
+            font-family: 'Mountains of Christmas', cursive, sans-serif;
+            font-size: 2.45rem;
+            font-weight: 700;
+            line-height: 1.05;
+            color: var(--red);
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .subtitle {
+            margin: 0 0 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .rules-box {
+            background: #f8faf7;
+            border: 1px solid #d5e5d8;
+            border-left: 5px solid var(--green);
+            border-radius: 16px;
+            padding: 0.95rem 1rem;
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .rules-title {
+            font-size: 0.84rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--green-dark);
+            margin: 0 0 0.55rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .rules-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.42rem;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+
+        .rules-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.45rem;
+            line-height: 1.38;
+        }
+
+        .timer-alert {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 10px;
+            color: #9f1239;
+            font-size: 0.86rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.38;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .btn {
+            appearance: none;
+            border: none;
+            border-radius: 14px;
+            padding: 0.95rem 0.7rem;
+            font-family: inherit;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .btn-person {
+            background: linear-gradient(180deg, var(--red) 0%, var(--red-dark) 100%);
+            color: #ffffff;
+            box-shadow: 0 5px 14px rgba(155, 17, 24, 0.28);
+        }
+
+        .btn-person:hover:not(:disabled) {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        .btn-person:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            box-shadow: none;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .btn-action {
+            width: 100%;
+            background: linear-gradient(180deg, #276f40 0%, var(--green-dark) 100%);
+            color: #ffffff;
+            padding: 1rem;
+            font-size: 1.05rem;
+            box-shadow: 0 6px 18px rgba(20, 61, 34, 0.32);
+        }
+
+        .btn-action:hover:not(:disabled) {
+            filter: brightness(1.06);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .link-box {
+            margin-top: 1.15rem;
+            background: #f8f9fa;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 0.85rem;
+            text-align: left;
+            font-size: 0.8rem;
+            word-break: break-all;
+            color: #334155;
+        }
+
+        .btn-copy {
+            margin-top: 0.7rem;
+            width: 100%;
+            background: var(--bg-top);
+            color: #fff;
+            padding: 0.8rem;
+            font-size: 0.92rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 22, 17, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 1.5rem;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            color: var(--text);
+            width: 100%;
+            max-width: 380px;
+            border-radius: 22px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.55);
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-confirm {
+            flex: 1;
+            background: var(--red);
+            color: #fff;
+        }
+
+        .gift-reveal {
+            background: linear-gradient(150deg, #1b4332 0%, #0d241b 65%, #3d0c11 100%);
+            color: #ffffff;
+            border: 2px solid var(--gold);
+        }
+
+        .nombre-tocado {
+            font-family: 'Mountains of Christmas', cursive, sans-serif;
+            font-size: 2.7rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 0.85rem 0;
+            letter-spacing: 0.03em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--gold);
+            transition: width 1s linear;
+        }
+
+        .timer-text {
+            font-size: 0.86rem;
+            color: rgba(255, 255, 255, 0.88);
+            margin-top: 0.6rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="garland" aria-hidden="true">
+        <span>🎄</span><span>🔴</span><span>⭐</span><span>🟢</span><span>🔔</span><span>🟡</span><span>🎄</span><span>🔴</span><span>⭐</span>
+    </div>
+
+    <div class="snowflakes" id="snowflakes" aria-hidden="true"></div>
+
+    <main class="card">
+        <div class="ribbon">✨ Feliz Navidad · Sorteo Familiar ✨</div>
+        <h1>Amigo Invisible</h1>
+        <div id="contenido"></div>
+    </main>
+
+    <div class="overlay" id="modal-confirm">
+        <div class="modal-box">
+            <div style="font-size: 2.3rem; margin-bottom: 0.4rem;">🎁</div>
+            <h2 style="margin: 0 0 0.5rem; font-size: 1.3rem;">¿Eres <span id="confirm-nombre"></span>?</h2>
+            <p class="subtitle" style="margin-bottom: 0;">Asegúrate de que nadie más esté mirando. Al pulsar verás tu resultado solo durante <strong>5 segundos</strong>.</p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="cerrarConfirmacion()">Cancelar</button>
+                <button class="btn btn-confirm" id="btn-confirmar-ver">Sí, ver (5s)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="modal-reveal">
+        <div class="modal-box gift-reveal">
+            <div style="font-size: 2.3rem;">🎅🎄✨</div>
+            <p style="margin: 0.45rem 0 0; opacity: 0.92;">Te ha tocado regalar a:</p>
+            <div class="nombre-tocado" id="resultado"></div>
+            <div class="progress-track">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="timer-text" id="contador">Solo visible 5s · Se cerrará en 5s...</p>
+        </div>
+    </div>
+
+    <script>
+        (function crearNieve() {
+            const cont = document.getElementById('snowflakes');
+            const copos = ['❄', '❅', '✦', '❆'];
+            for (let i = 0; i < 18; i++) {
+                const span = document.createElement('span');
+                span.className = 'flake';
+                span.textContent = copos[i % copos.length];
+                span.style.left = `${(i * 5.6) % 100}%`;
+                span.style.fontSize = `${0.8 + (i % 4) * 0.25}rem`;
+                span.style.animationDuration = `${8 + (i % 6) * 2.2}s`;
+                span.style.animationDelay = `${-(i * 1.3)}s`;
+                cont.appendChild(span);
+            }
+        })();
+
+        const params = new URLSearchParams(window.location.search);
+        const dataParam = params.get('data');
+        const rulesParam = params.get('reglas');
+        const contenedor = document.getElementById('contenido');
+
+        let configSorteo = {
+            reglas: { evitarMismaFamilia: true, mismoGrupoEdad: false },
+            participantes: []
+        };
+
+        function renderInstruccionesParticipante(reglas) {
+            const criterios = [];
+            criterios.push('<li>🎲 <span>Reparto aleatorio generado automáticamente sin intervención manual.</span></li>');
+            criterios.push('<li>🎅 <span>A nadie puede tocarse a sí mismo.</span></li>');
+            if (reglas.evitarMismaFamilia) {
+                criterios.push('<li>🏠 <span>No se permite regalar a alguien de la misma familia.</span></li>');
+            } else {
+                criterios.push('<li>🏠 <span>Se permite regalar dentro de la misma familia.</span></li>');
+            }
+            if (reglas.mismoGrupoEdad) {
+                criterios.push('<li>🧸 <span>Adultos regalan a adultos y niños regalan a niños.</span></li>');
+            } else {
+                criterios.push('<li>🎁 <span>Sorteo abierto entre adultos y niños (respetando familias).</span></li>');
+            }
+
+            return `
+                <section class="rules-box" aria-label="Instrucciones y reglas del sorteo">
+                    <div class="rules-title">📜 Cómo se ha hecho el sorteo y cómo participar</div>
+                    <ul class="rules-list">${criterios.join('')}</ul>
+                    <div class="timer-alert">⏱️ Pulsa en tu nombre y tienes 5 segundos para saber quién te ha tocado antes de que se oculte.</div>
+                </section>
+            `;
+        }
+
+        if (!dataParam) {
+            contenedor.innerHTML = `
+                <div id="estado-error"></div>
+                <button class="btn btn-action" id="btn-generar" onclick="generarSorteo()" disabled>🎄 Generar Enlace del Sorteo</button>
+                <div id="zona-link"></div>
+            `;
+            cargarParticipantes();
+        } else {
+            try {
+                const asignaciones = JSON.parse(decodeURIComponent(atob(dataParam)));
+                let reglasActivas = { evitarMismaFamilia: true, mismoGrupoEdad: false };
+                if (rulesParam) {
+                    reglasActivas = Object.assign(reglasActivas, JSON.parse(decodeURIComponent(atob(rulesParam))));
+                }
+
+                const storageKey = 'vistos_' + dataParam.slice(0, 12);
+                const vistos = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+                contenedor.innerHTML = `
+                    ${renderInstruccionesParticipante(reglasActivas)}
+                    <div class="grid" id="grid"></div>
+                `;
+                const grid = document.getElementById('grid');
+
+                Object.keys(asignaciones).forEach(persona => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-person';
+                    btn.textContent = persona;
+                    if (vistos.includes(persona)) {
+                        btn.disabled = true;
+                        btn.textContent = `${persona} ✓`;
+                    }
+                    btn.onclick = () => pedirConfirmacion(persona, asignaciones[persona], btn, storageKey);
+                    grid.appendChild(btn);
+                });
+            } catch (e) {
+                contenedor.innerHTML = `<p class="subtitle" style="color:#c81d25; font-weight:700;">El enlace del sorteo no es válido o está incompleto.</p>`;
+            }
+        }
+
+        async function cargarParticipantes() {
+            const btnGenerar = document.getElementById('btn-generar');
+            const estadoError = document.getElementById('estado-error');
+
+            try {
+                const resp = await fetch('./participantes.json', { cache: 'no-store' });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const json = await resp.json();
+
+                configSorteo = {
+                    reglas: Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, json.reglas || {}),
+                    participantes: Array.isArray(json.participantes) ? json.participantes : []
+                };
+
+                if (configSorteo.participantes.length < 2) {
+                    throw new Error('Se necesitan al menos 2 participantes');
+                }
+
+                btnGenerar.disabled = false;
+            } catch (err) {
+                estadoError.innerHTML = `<p class="subtitle" style="color:#c81d25; font-weight:700;">No se pudo cargar <code>participantes.json</code> (${err.message}).</p>`;
+            }
+        }
+
+        function generarSorteo() {
+            const lista = configSorteo.participantes;
+            const reglas = configSorteo.reglas;
+            let valido = false;
+            let resultado = {};
+            let intentos = 0;
+
+            while (!valido && intentos < 10000) {
+                intentos++;
+                let receptores = [...lista].sort(() => Math.random() - 0.5);
+                valido = true;
+                resultado = {};
+
+                for (let i = 0; i < lista.length; i++) {
+                    const dador = lista[i];
+                    const receptor = receptores[i];
+
+                    if (dador.nombre === receptor.nombre) {
+                        valido = false;
+                        break;
+                    }
+                    if (reglas.evitarMismaFamilia && dador.familia === receptor.familia) {
+                        valido = false;
+                        break;
+                    }
+                    if (reglas.mismoGrupoEdad && dador.grupo && receptor.grupo && dador.grupo !== receptor.grupo) {
+                        valido = false;
+                        break;
+                    }
+                    resultado[dador.nombre] = receptor.nombre;
+                }
+            }
+
+            if (!valido) {
+                alert("No se encontró un reparto válido con esas reglas. Revisa las familias o grupos en participantes.json.");
+                return;
+            }
+
+            const payload = btoa(encodeURIComponent(JSON.stringify(resultado)));
+            const rulesEncoded = btoa(encodeURIComponent(JSON.stringify(reglas)));
+            const urlFinal = `${window.location.origin}${window.location.pathname}?data=${payload}&reglas=${rulesEncoded}`;
+
+            document.getElementById('zona-link').innerHTML = `
+                <div class="link-box" id="url-texto">${urlFinal}</div>
+                <button class="btn btn-copy" onclick="copiarEnlace('${urlFinal}', this)">📋 Copiar enlace para WhatsApp</button>
+            `;
+        }
+
+        function copiarEnlace(url, btn) {
+            navigator.clipboard.writeText(url).then(() => {
+                const original = btn.textContent;
+                btn.textContent = "✅ ¡Enlace copiado!";
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        function pedirConfirmacion(persona, tocado, boton, storageKey) {
+            const modalConfirm = document.getElementById('modal-confirm');
+            document.getElementById('confirm-nombre').textContent = persona;
+            modalConfirm.style.display = 'flex';
+
+            const btnConfirmar = document.getElementById('btn-confirmar-ver');
+            btnConfirmar.onclick = () => {
+                cerrarConfirmacion();
+                revelar(persona, tocado, boton, storageKey);
+            };
+        }
+
+        function cerrarConfirmacion() {
+            document.getElementById('modal-confirm').style.display = 'none';
+        }
+
+        function revelar(persona, tocado, boton, storageKey) {
+            const modal = document.getElementById('modal-reveal');
+            const contador = document.getElementById('contador');
+            const bar = document.getElementById('progress-bar');
+
+            document.getElementById('resultado').textContent = tocado;
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            modal.style.display = 'flex';
+
+            const vistos = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (!vistos.includes(persona)) {
+                vistos.push(persona);
+                localStorage.setItem(storageKey, JSON.stringify(vistos));
+            }
+
+            boton.disabled = true;
+            boton.textContent = `${persona} ✓`;
+
+            void bar.offsetWidth;
+            bar.style.transition = 'width 5s linear';
+            bar.style.width = '0%';
+
+            let segundos = 5;
+            contador.textContent = `Solo visible 5s · Se cerrará en ${segundos}s...`;
+            const intervalo = setInterval(() => {
+                segundos--;
+                contador.textContent = `Solo visible 5s · Se cerrará en ${segundos}s...`;
+                if (segundos <= 0) {
+                    clearInterval(intervalo);
+                    modal.style.display = 'none';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
