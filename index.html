@@ -574,7 +574,10 @@
                     grid.appendChild(btn);
                 });
             } catch (e) {
-                contenedor.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">El enlace del sorteo no es válido o está incompleto.</p>`;
+                const msg = params.has('reglas')
+                    ? 'Este enlace es de una versión anterior de la página. Pide al organizador que genere los enlaces de nuevo.'
+                    : 'El enlace del sorteo no es válido o está incompleto.';
+                contenedor.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">${msg}</p>`;
             }
         }
 
