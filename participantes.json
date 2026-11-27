@@ -14,7 +14,7 @@
     { "nombre": "Martina", "familia": 2, "grupo": "nino" },
     { "nombre": "Jesús", "familia": 3, "grupo": "adulto" },
     { "nombre": "Gema", "familia": 3, "grupo": "adulto" },
-    { "nombre": "Guille", "familia": 3, "grupo": "nino" }
+    { "nombre": "Guille", "familia": 3, "grupo": "nino" },
     { "nombre": "Carla", "familia": 3, "grupo": "nino" }
   ]
 }
