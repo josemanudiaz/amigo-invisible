@@ -1,0 +1,20 @@
+{
+  "reglas": {
+    "evitarMismaFamilia": true,
+    "mismoGrupoEdad": false
+  },
+  "participantes": [
+    { "nombre": "Jose (lolo)", "familia": 1, "grupo": "adulto" },
+    { "nombre": "Yoli", "familia": 1, "grupo": "adulto" },
+    { "nombre": "Claudia", "familia": 1, "grupo": "nino" },
+    { "nombre": "Marcos", "familia": 1, "grupo": "nino" },
+    { "nombre": "Martina", "familia": 1, "grupo": "nino" },
+    { "nombre": "Carla", "familia": 1, "grupo": "nino" },
+    { "nombre": "Jose Ramón", "familia": 2, "grupo": "adulto" },
+    { "nombre": "Chus", "familia": 2, "grupo": "adulto" },
+    { "nombre": "Iguacel", "familia": 2, "grupo": "nino" },
+    { "nombre": "Jesús", "familia": 3, "grupo": "adulto" },
+    { "nombre": "Gema", "familia": 3, "grupo": "adulto" },
+    { "nombre": "Guille", "familia": 3, "grupo": "nino" }
+  ]
+}
