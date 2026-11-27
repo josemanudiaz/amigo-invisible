@@ -281,4 +281,286 @@
             margin: 0.85rem 0;
         }
 
-        .progress-track
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--gold);
+            transition: width 1s linear;
+        }
+
+        .timer-text {
+            font-size: 0.86rem;
+            color: rgba(255, 255, 255, 0.88);
+            margin-top: 0.6rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="garland" aria-hidden="true">
+        <span>🎄</span><span>🔴</span><span>⭐</span><span>🟢</span><span>🔔</span><span>🟡</span><span>🎄</span><span>🔴</span><span>⭐</span>
+    </div>
+
+    <div class="snowflakes" id="snowflakes" aria-hidden="true"></div>
+
+    <main class="card">
+        <div class="ribbon">✨ Feliz Navidad · Sorteo Familiar ✨</div>
+        <h1>🎄 Amigo Invisible</h1>
+        <div id="contenido"></div>
+    </main>
+
+    <div class="overlay" id="modal-confirm">
+        <div class="modal-box">
+            <div style="font-size: 2.3rem; margin-bottom: 0.4rem;">🎁</div>
+            <h2 style="margin: 0 0 0.5rem; font-size: 1.3rem;">¿Eres <span id="confirm-nombre"></span>?</h2>
+            <p class="subtitle" style="margin-bottom: 0;">Asegúrate de que nadie más esté mirando. Al pulsar verás tu resultado solo durante <strong>5 segundos</strong>.</p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="cerrarConfirmacion()">Cancelar</button>
+                <button class="btn btn-confirm" id="btn-confirmar-ver">Sí, ver (5s)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="modal-reveal">
+        <div class="modal-box gift-reveal">
+            <div style="font-size: 2.3rem;">🎅🎄✨</div>
+            <p style="margin: 0.45rem 0 0; opacity: 0.92;">Te ha tocado regalar a:</p>
+            <div class="nombre-tocado" id="resultado"></div>
+            <div class="progress-track">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="timer-text" id="contador">Solo visible 5s · Se cerrará en 5s...</p>
+        </div>
+    </div>
+
+    <script>
+        (function crearNieve() {
+            const cont = document.getElementById('snowflakes');
+            if (!cont) return;
+            const copos = ['❄', '❅', '✦', '❆'];
+            for (let i = 0; i < 16; i++) {
+                const span = document.createElement('span');
+                span.className = 'flake';
+                span.textContent = copos[i % copos.length];
+                span.style.left = `${(i * 6.2) % 100}%`;
+                span.style.fontSize = `${0.8 + (i % 4) * 0.25}rem`;
+                span.style.animationDuration = `${8 + (i % 6) * 2.2}s`;
+                span.style.animationDelay = `${-(i * 1.3)}s`;
+                cont.appendChild(span);
+            }
+        })();
+
+        const params = new URLSearchParams(window.location.search);
+        const dataParam = params.get('data');
+        const rulesParam = params.get('reglas');
+        const contenedor = document.getElementById('contenido');
+
+        let configSorteo = {
+            reglas: { evitarMismaFamilia: true, mismoGrupoEdad: false },
+            participantes: []
+        };
+
+        function renderInstruccionesParticipante(reglas) {
+            const criterios = [
+                '<li>🎲 <span>Reparto aleatorio generado automáticamente sin intervención manual.</span></li>',
+                '<li>🎅 <span>A nadie puede tocarse a sí mismo.</span></li>',
+                reglas.evitarMismaFamilia
+                    ? '<li>🏠 <span>No se permite regalar a alguien de la misma familia.</span></li>'
+                    : '<li>🏠 <span>Se permite regalar dentro de la misma familia.</span></li>',
+                reglas.mismoGrupoEdad
+                    ? '<li>🧸 <span>Adultos regalan a adultos y niños regalan a niños.</span></li>'
+                    : '<li>🎁 <span>Sorteo abierto entre adultos y niños (respetando familias).</span></li>'
+            ];
+
+            return `
+                <section class="rules-box" aria-label="Instrucciones y reglas del sorteo">
+                    <div class="rules-title">📜 Cómo se ha hecho el sorteo y cómo participar</div>
+                    <ul class="rules-list">${criterios.join('')}</ul>
+                    <div class="timer-alert">⏱️ Pulsa en tu nombre y tienes 5 segundos para saber quién te ha tocado antes de que se oculte.</div>
+                </section>
+            `;
+        }
+
+        if (!dataParam) {
+            contenedor.innerHTML = `
+                <div id="estado-error"></div>
+                <button class="btn btn-action" id="btn-generar" onclick="generarSorteo()" disabled>🎄 Generar Enlace del Sorteo</button>
+                <div id="zona-link"></div>
+            `;
+            cargarParticipantes();
+        } else {
+            try {
+                const asignaciones = JSON.parse(decodeURIComponent(atob(dataParam)));
+                let reglasActivas = { evitarMismaFamilia: true, mismoGrupoEdad: false };
+                if (rulesParam) {
+                    reglasActivas = Object.assign(reglasActivas, JSON.parse(decodeURIComponent(atob(rulesParam))));
+                }
+
+                const storageKey = 'vistos_' + dataParam.slice(0, 12);
+                const vistos = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+                contenedor.innerHTML = `
+                    ${renderInstruccionesParticipante(reglasActivas)}
+                    <div class="grid" id="grid"></div>
+                `;
+                const grid = document.getElementById('grid');
+
+                Object.keys(asignaciones).forEach(persona => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-person';
+                    btn.textContent = persona;
+                    if (vistos.includes(persona)) {
+                        btn.disabled = true;
+                        btn.textContent = `${persona} ✓`;
+                    }
+                    btn.onclick = () => pedirConfirmacion(persona, asignaciones[persona], btn, storageKey);
+                    grid.appendChild(btn);
+                });
+            } catch (e) {
+                contenedor.innerHTML = `<p class="subtitle" style="color:#c81d25; font-weight:700;">El enlace del sorteo no es válido o está incompleto.</p>`;
+            }
+        }
+
+        async function cargarParticipantes() {
+            const btnGenerar = document.getElementById('btn-generar');
+            const estadoError = document.getElementById('estado-error');
+
+            try {
+                const resp = await fetch('./participantes.json', { cache: 'no-store' });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const json = await resp.json();
+
+                configSorteo = {
+                    reglas: Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, json.reglas || {}),
+                    participantes: Array.isArray(json.participantes) ? json.participantes : []
+                };
+
+                if (configSorteo.participantes.length < 2) {
+                    throw new Error('Se necesitan al menos 2 participantes');
+                }
+
+                btnGenerar.disabled = false;
+            } catch (err) {
+                estadoError.innerHTML = `<p class="subtitle" style="color:#c81d25; font-weight:700;">Error al cargar participantes.json (${err.message}).</p>`;
+            }
+        }
+
+        function generarSorteo() {
+            const lista = configSorteo.participantes;
+            const reglas = configSorteo.reglas;
+            let valido = false;
+            let resultado = {};
+            let intentos = 0;
+
+            while (!valido && intentos < 10000) {
+                intentos++;
+                let receptores = [...lista].sort(() => Math.random() - 0.5);
+                valido = true;
+                resultado = {};
+
+                for (let i = 0; i < lista.length; i++) {
+                    const dador = lista[i];
+                    const receptor = receptores[i];
+
+                    if (dador.nombre === receptor.nombre) {
+                        valido = false;
+                        break;
+                    }
+                    if (reglas.evitarMismaFamilia && dador.familia === receptor.familia) {
+                        valido = false;
+                        break;
+                    }
+                    if (reglas.mismoGrupoEdad && dador.grupo && receptor.grupo && dador.grupo !== receptor.grupo) {
+                        valido = false;
+                        break;
+                    }
+                    resultado[dador.nombre] = receptor.nombre;
+                }
+            }
+
+            if (!valido) {
+                alert("No se encontró un reparto válido con esas reglas. Revisa las familias o grupos en participantes.json.");
+                return;
+            }
+
+            const payload = btoa(encodeURIComponent(JSON.stringify(resultado)));
+            const rulesEncoded = btoa(encodeURIComponent(JSON.stringify(reglas)));
+            const urlFinal = `${window.location.origin}${window.location.pathname}?data=${payload}&reglas=${rulesEncoded}`;
+
+            document.getElementById('zona-link').innerHTML = `
+                <div class="link-box" id="url-texto">${urlFinal}</div>
+                <button class="btn btn-copy" onclick="copiarEnlace('${urlFinal}', this)">📋 Copiar enlace para WhatsApp</button>
+            `;
+        }
+
+        function copiarEnlace(url, btn) {
+            navigator.clipboard.writeText(url).then(() => {
+                const original = btn.textContent;
+                btn.textContent = "✅ ¡Enlace copiado!";
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        function pedirConfirmacion(persona, tocado, boton, storageKey) {
+            const modalConfirm = document.getElementById('modal-confirm');
+            document.getElementById('confirm-nombre').textContent = persona;
+            modalConfirm.style.display = 'flex';
+
+            const btnConfirmar = document.getElementById('btn-confirmar-ver');
+            btnConfirmar.onclick = () => {
+                cerrarConfirmacion();
+                revelar(persona, tocado, boton, storageKey);
+            };
+        }
+
+        function cerrarConfirmacion() {
+            document.getElementById('modal-confirm').style.display = 'none';
+        }
+
+        function revelar(persona, tocado, boton, storageKey) {
+            const modal = document.getElementById('modal-reveal');
+            const contador = document.getElementById('contador');
+            const bar = document.getElementById('progress-bar');
+
+            document.getElementById('resultado').textContent = tocado;
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            modal.style.display = 'flex';
+
+            const vistos = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (!vistos.includes(persona)) {
+                vistos.push(persona);
+                localStorage.setItem(storageKey, JSON.stringify(vistos));
+            }
+
+            boton.disabled = true;
+            boton.textContent = `${persona} ✓`;
+
+            void bar.offsetWidth;
+            bar.style.transition = 'width 5s linear';
+            bar.style.width = '0%';
+
+            let segundos = 5;
+            contador.textContent = `Solo visible 5s · Se cerrará en ${segundos}s...`;
+            const intervalo = setInterval(() => {
+                segundos--;
+                contador.textContent = `Solo visible 5s · Se cerrará en ${segundos}s...`;
+                if (segundos <= 0) {
+                    clearInterval(intervalo);
+                    modal.style.display = 'none';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
