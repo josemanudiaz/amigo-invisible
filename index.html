@@ -443,6 +443,14 @@
     </div>
 
     <script>
+        /* =====================================================
+           CONFIGURACIÓN SUPABASE  ← rellena estos dos valores
+           (Project Settings → API Keys). La clave publishable/anon
+           es pública por diseño: puede ir en el repositorio.
+           ===================================================== */
+        const SUPABASE_URL = 'https://avfcgfyztxtbemykyvrx.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_W2exONJ3aqFMWfkSdSSa0w_UQRtBXme';
+
         (function crearNieve() {
             const cont = document.getElementById('snowflakes');
             if (!cont) return;
@@ -461,71 +469,66 @@
 
         /* ---------- Utilidades ---------- */
 
-        // Base64url: sin '+', '/' ni '=' → no se rompe al pasar por la URL ni por WhatsApp
-        function codificar(obj) {
-            const bytes = new TextEncoder().encode(JSON.stringify(obj));
-            let bin = '';
-            bytes.forEach(b => bin += String.fromCharCode(b));
-            return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        }
-
-        function decodificar(texto) {
-            let b64 = texto.replace(/-/g, '+').replace(/_/g, '/');
-            while (b64.length % 4) b64 += '=';
-            const bin = atob(b64);
-            const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
-            return JSON.parse(new TextDecoder().decode(bytes));
-        }
-
-        // Número aleatorio criptográficamente seguro en [0, max)
-        function aleatorio(max) {
-            const limite = Math.floor(0x100000000 / max) * max;
-            const buf = new Uint32Array(1);
-            do { crypto.getRandomValues(buf); } while (buf[0] >= limite);
-            return buf[0] % max;
-        }
-
-        // Fisher-Yates: barajado uniforme
-        function barajar(array) {
-            const a = [...array];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = aleatorio(i + 1);
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        function idAleatorio() {
-            const buf = new Uint8Array(6);
-            crypto.getRandomValues(buf);
-            return Array.from(buf, b => b.toString(16).padStart(2, '0')).join('');
+        async function rpc(funcion, args) {
+            const resp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${funcion}`, {
+                method: 'POST',
+                headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify(args),
+                cache: 'no-store'
+            });
+            const texto = await resp.text();
+            const json = texto ? JSON.parse(texto) : null;
+            if (!resp.ok) throw new Error((json && json.message) || ('HTTP ' + resp.status));
+            return json;
         }
 
         function escaparHTML(s) {
             return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
+        function mostrarError(msg) {
+            contenedor.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">${escaparHTML(msg)}</p>`;
+        }
+
         /* ---------- Arranque ---------- */
 
         const params = new URLSearchParams(window.location.search);
-        const dataParam = params.get('data');
+        const sorteoId = params.get('s');
         const contenedor = document.getElementById('contenido');
+        let participantesJson = null;
 
-        let configSorteo = {
-            reglas: { evitarMismaFamilia: true, mismoGrupoEdad: false },
-            participantes: []
-        };
+        if (SUPABASE_URL.includes('TU-PROYECTO')) {
+            mostrarError('Falta configurar SUPABASE_URL y SUPABASE_KEY en index.html.');
+        } else if (params.has('data')) {
+            mostrarError('Este enlace es de una versión anterior de la página. Pide al organizador el enlace nuevo.');
+        } else if (!sorteoId) {
+            contenedor.innerHTML = `
+                <div id="estado-error"></div>
+                <button class="btn btn-action" id="btn-generar" onclick="generarSorteo()" disabled>🎄 Crear sorteo</button>
+                <div id="zona-link"></div>
+            `;
+            cargarParticipantes();
+        } else if (!/^[0-9a-f-]{36}$/i.test(sorteoId)) {
+            mostrarError('El enlace del sorteo no es válido o está incompleto.');
+        } else {
+            cargarSorteo();
+            // Al volver a la pestaña, refresca quién lo ha visto ya
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') actualizarEstado();
+            });
+        }
 
         function renderInstruccionesParticipante(reglas) {
             const criterios = [
-                '<li>🎲 <span>Reparto aleatorio generado automáticamente sin intervención manual.</span></li>',
+                '<li>🎲 <span>Reparto aleatorio generado automáticamente sin intervención manual. Nadie conoce el resultado completo.</span></li>',
                 '<li>🎅 <span>A nadie puede tocarse a sí mismo.</span></li>',
                 reglas.evitarMismaFamilia
                     ? '<li>🏠 <span>No se permite regalar a alguien de la misma familia.</span></li>'
                     : '<li>🏠 <span>Se permite regalar dentro de la misma familia.</span></li>',
                 reglas.mismoGrupoEdad
                     ? '<li>🧸 <span>Adultos regalan a adultos y niños regalan a niños.</span></li>'
-                    : '<li>🎁 <span>Sorteo abierto entre adultos y niños.</span></li>'
+                    : '<li>🎁 <span>Sorteo abierto entre adultos y niños.</span></li>',
+                '<li>🔒 <span>Cada nombre solo se puede abrir una vez, desde cualquier móvil.</span></li>'
             ];
 
             return `
@@ -537,57 +540,7 @@
             `;
         }
 
-        if (!dataParam) {
-            contenedor.innerHTML = `
-                <div id="estado-error"></div>
-                <button class="btn btn-action" id="btn-generar" onclick="generarSorteo()" disabled>🎄 Generar enlaces del sorteo</button>
-                <div id="zona-link"></div>
-            `;
-            cargarParticipantes();
-        } else {
-            try {
-                // Cada enlace es de UNA familia y solo contiene los resultados de sus miembros
-                const datos = decodificar(dataParam);
-                const asignaciones = datos.a || {};
-                if (!datos.id || Object.keys(asignaciones).length === 0) throw new Error('vacío');
-
-                const reglasActivas = Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, datos.r || {});
-                const storageKey = `vistos_${datos.id}_${datos.f}`;
-                const vistos = leerVistos(storageKey);
-
-                contenedor.innerHTML = `
-                    <div class="familia-tag">🏠 Familia ${escaparHTML(datos.f)}</div>
-                    ${renderInstruccionesParticipante(reglasActivas)}
-                    <div class="grid" id="grid"></div>
-                `;
-                const grid = document.getElementById('grid');
-
-                Object.keys(asignaciones).forEach(persona => {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn btn-person';
-                    btn.textContent = persona;
-                    if (vistos.includes(persona)) {
-                        btn.disabled = true;
-                        btn.textContent = `${persona} ✓`;
-                    }
-                    btn.onclick = () => pedirConfirmacion(persona, asignaciones[persona], btn, storageKey);
-                    grid.appendChild(btn);
-                });
-            } catch (e) {
-                const msg = params.has('reglas')
-                    ? 'Este enlace es de una versión anterior de la página. Pide al organizador que genere los enlaces de nuevo.'
-                    : 'El enlace del sorteo no es válido o está incompleto.';
-                contenedor.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">${msg}</p>`;
-            }
-        }
-
-        function leerVistos(key) {
-            try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
-        }
-
-        function guardarVistos(key, lista) {
-            try { localStorage.setItem(key, JSON.stringify(lista)); } catch { /* modo privado: se ignora */ }
-        }
+        /* ---------- Modo organizador ---------- */
 
         async function cargarParticipantes() {
             const btnGenerar = document.getElementById('btn-generar');
@@ -597,80 +550,44 @@
                 const resp = await fetch('./participantes.json', { cache: 'no-store' });
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 const json = await resp.json();
-
-                configSorteo = {
-                    reglas: Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, json.reglas || {}),
-                    participantes: Array.isArray(json.participantes) ? json.participantes : []
-                };
-
-                if (configSorteo.participantes.length < 2) {
+                if (!Array.isArray(json.participantes) || json.participantes.length < 2) {
                     throw new Error('Se necesitan al menos 2 participantes');
                 }
-
-                const nombres = configSorteo.participantes.map(p => p.nombre);
-                if (new Set(nombres).size !== nombres.length) {
-                    throw new Error('Hay nombres repetidos');
-                }
-
+                participantesJson = json;
                 btnGenerar.disabled = false;
             } catch (err) {
                 estadoError.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">Error al cargar participantes.json (${escaparHTML(err.message)}).</p>`;
             }
         }
 
-        function esValido(dador, receptor, reglas) {
-            if (dador.nombre === receptor.nombre) return false;
-            if (reglas.evitarMismaFamilia && dador.familia === receptor.familia) return false;
-            if (reglas.mismoGrupoEdad && dador.grupo && receptor.grupo && dador.grupo !== receptor.grupo) return false;
-            return true;
-        }
+        async function generarSorteo() {
+            const btn = document.getElementById('btn-generar');
+            const zona = document.getElementById('zona-link');
+            btn.disabled = true;
+            btn.textContent = '⏳ Creando sorteo...';
 
-        function generarSorteo() {
-            const lista = configSorteo.participantes;
-            const reglas = configSorteo.reglas;
-            let resultado = null;
+            try {
+                const reglas = Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, participantesJson.reglas || {});
+                const id = await rpc('crear_sorteo', {
+                    p_participantes: participantesJson.participantes,
+                    p_reglas: reglas
+                });
 
-            for (let intentos = 0; intentos < 10000 && !resultado; intentos++) {
-                const receptores = barajar(lista);
-                if (lista.every((dador, i) => esValido(dador, receptores[i], reglas))) {
-                    resultado = {};
-                    lista.forEach((dador, i) => resultado[dador.nombre] = receptores[i].nombre);
-                }
-            }
-
-            if (!resultado) {
-                alert("No se encontró un reparto válido con esas reglas. Revisa las familias o grupos en participantes.json.");
-                return;
-            }
-
-            // Un enlace por familia con solo sus asignaciones
-            const id = idAleatorio();
-            const familias = [...new Set(lista.map(p => p.familia))];
-            const base = `${window.location.origin}${window.location.pathname}`;
-
-            const bloques = familias.map(f => {
-                const miembros = lista.filter(p => p.familia === f).map(p => p.nombre);
-                const a = {};
-                miembros.forEach(n => a[n] = resultado[n]);
-                const url = `${base}?data=${codificar({ id, f, r: reglas, a })}`;
-                return `
+                const url = `${window.location.origin}${window.location.pathname}?s=${id}`;
+                btn.style.display = 'none';
+                zona.innerHTML = `
+                    <div class="aviso-org">✅ Sorteo creado. Envía <strong>este único enlace</strong> a todas las familias. Si recargas y creas otro, será un sorteo distinto.</div>
                     <div class="familia-link">
-                        <div class="familia-link-titulo">🏠 Familia ${escaparHTML(f)}</div>
-                        <div class="familia-link-miembros">${miembros.map(escaparHTML).join(' · ')}</div>
                         <div class="link-box">${escaparHTML(url)}</div>
-                        <button class="btn btn-copy" data-url="${escaparHTML(url)}">📋 Copiar enlace de la familia ${escaparHTML(f)}</button>
+                        <button class="btn btn-copy" id="btn-copiar">📋 Copiar enlace para WhatsApp</button>
                     </div>
                 `;
-            }).join('');
-
-            document.getElementById('zona-link').innerHTML = `
-                <div class="aviso-org">⚠️ Envía <strong>cada enlace solo a su familia</strong>. Si vuelves a pulsar "Generar", se hace un sorteo nuevo y los enlaces anteriores dejan de ser coherentes con este.</div>
-                ${bloques}
-            `;
-
-            document.querySelectorAll('#zona-link .btn-copy').forEach(btn => {
-                btn.onclick = () => copiarEnlace(btn.dataset.url, btn);
-            });
+                document.getElementById('btn-copiar').onclick = (e) => copiarEnlace(url, e.currentTarget);
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = '🎄 Crear sorteo';
+                zona.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700; margin-top:1rem;">No se pudo crear el sorteo: ${escaparHTML(err.message)}</p>`;
+            }
         }
 
         function copiarEnlace(url, btn) {
@@ -699,14 +616,77 @@
             return ok;
         }
 
-        function pedirConfirmacion(persona, tocado, boton, storageKey) {
+        /* ---------- Modo participante ---------- */
+
+        const botones = {};
+
+        async function cargarSorteo() {
+            contenedor.innerHTML = `<p class="subtitle">⏳ Cargando sorteo...</p>`;
+            try {
+                const filas = await rpc('estado_sorteo', { p_sorteo: sorteoId });
+                if (!filas || filas.length === 0) {
+                    mostrarError('Este sorteo no existe. Revisa el enlace.');
+                    return;
+                }
+
+                contenedor.innerHTML = `
+                    ${renderInstruccionesParticipante(filas[0].reglas || {})}
+                    <div class="grid" id="grid"></div>
+                `;
+                const grid = document.getElementById('grid');
+
+                filas.forEach(({ nombre, visto }) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-person';
+                    btn.onclick = () => pedirConfirmacion(nombre);
+                    botones[nombre] = btn;
+                    marcarBoton(nombre, visto);
+                    grid.appendChild(btn);
+                });
+            } catch (err) {
+                mostrarError('No se pudo cargar el sorteo (' + err.message + '). Comprueba la conexión y recarga.');
+            }
+        }
+
+        async function actualizarEstado() {
+            try {
+                const filas = await rpc('estado_sorteo', { p_sorteo: sorteoId });
+                (filas || []).forEach(({ nombre, visto }) => marcarBoton(nombre, visto));
+            } catch { /* sin conexión: se mantiene lo que hay */ }
+        }
+
+        function marcarBoton(nombre, visto) {
+            const btn = botones[nombre];
+            if (!btn) return;
+            btn.disabled = !!visto;
+            btn.textContent = visto ? `${nombre} ✓` : nombre;
+        }
+
+        function pedirConfirmacion(persona) {
             const modalConfirm = document.getElementById('modal-confirm');
+            const btnConfirmar = document.getElementById('btn-confirmar-ver');
             document.getElementById('confirm-nombre').textContent = persona;
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = 'Sí, ver (5s)';
             modalConfirm.style.display = 'flex';
 
-            document.getElementById('btn-confirmar-ver').onclick = () => {
-                cerrarConfirmacion();
-                revelar(persona, tocado, boton, storageKey);
+            btnConfirmar.onclick = async () => {
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = '⏳';
+                try {
+                    const tocado = await rpc('revelar', { p_sorteo: sorteoId, p_nombre: persona });
+                    cerrarConfirmacion();
+                    marcarBoton(persona, true);
+                    revelar(tocado);
+                } catch (err) {
+                    cerrarConfirmacion();
+                    if (err.message === 'YA_VISTO') {
+                        marcarBoton(persona, true);
+                        alert(`${persona} ya ha visto su resultado. Si ha sido un error, avisa al organizador.`);
+                    } else {
+                        alert('No se pudo consultar el resultado (' + err.message + '). Inténtalo de nuevo.');
+                    }
+                }
             };
         }
 
@@ -714,7 +694,7 @@
             document.getElementById('modal-confirm').style.display = 'none';
         }
 
-        function revelar(persona, tocado, boton, storageKey) {
+        function revelar(tocado) {
             const modal = document.getElementById('modal-reveal');
             const contador = document.getElementById('contador');
             const bar = document.getElementById('progress-bar');
@@ -723,15 +703,6 @@
             bar.style.transition = 'none';
             bar.style.width = '100%';
             modal.style.display = 'flex';
-
-            const vistos = leerVistos(storageKey);
-            if (!vistos.includes(persona)) {
-                vistos.push(persona);
-                guardarVistos(storageKey, vistos);
-            }
-
-            boton.disabled = true;
-            boton.textContent = `${persona} ✓`;
 
             void bar.offsetWidth;
             bar.style.transition = 'width 5s linear';
