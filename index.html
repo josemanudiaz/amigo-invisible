@@ -818,17 +818,6 @@
         }
         .revelacion-titulo { font-family: "Mountains of Christmas", cursive; font-size: 1.55rem; color: #f5d0fe; margin: 0 0 .2rem; }
         .revelacion p { margin: 0; font-size: .9rem; color: var(--texto-suave); line-height: 1.4; }
-        .reloj { display: flex; justify-content: center; gap: .5rem; margin-top: .8rem; }
-        .reloj div {
-            min-width: 58px;
-            padding: .45rem .3rem;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, .3);
-            font-size: 1.35rem;
-            font-weight: 900;
-            color: #fdf4ff;
-        }
-        .reloj small { display: block; font-size: .65rem; font-weight: 800; color: #e9d5ff; text-transform: uppercase; letter-spacing: .06em; }
         .btn-final {
             width: 100%;
             margin-top: .9rem;
@@ -1351,8 +1340,6 @@
                 <h2 class="taller-titulo">El taller de los elfos</h2>
                 <p class="lema" style="margin-top:0">${lista.length} participantes listos para el sorteo</p>
                 <div class="familias">${bloques}</div>
-                <label class="etiqueta-campo" for="campo-revelacion">🎉 Revelación final (vacío = sin revelación)</label>
-                <input class="campo campo-fecha" id="campo-revelacion" type="datetime-local" value="${fechaInputPorDefecto()}">
                 <button class="btn btn-magia" id="btn-generar">✨ Hacer el sorteo mágico ✨</button>
                 <div id="zona-link"></div>
                 <h3 class="seccion-titulo">📋 Sorteos creados</h3>
@@ -1363,29 +1350,6 @@
             cargarSorteosAdmin();
         }
 
-        // Fecha por defecto: "revelacion" de participantes.json o el 25/12 a las 00:00
-        function fechaInputPorDefecto() {
-            let d = participantesJson.revelacion ? new Date(participantesJson.revelacion) : null;
-            if (!d || isNaN(d)) {
-                const hoy = new Date();
-                d = new Date(hoy.getFullYear(), 11, 25, 0, 0);
-                if (d < hoy) d = new Date(hoy.getFullYear() + 1, 11, 25, 0, 0);
-            }
-            return aInputLocal(d);
-        }
-
-        function aInputLocal(d) {
-            const p = n => String(n).padStart(2, '0');
-            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-        }
-
-        function deInputLocal(valor) {
-            if (!valor) return null;
-            const d = new Date(valor);
-            return isNaN(d) ? null : d.toISOString();
-        }
-
-        const fmtFecha = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
         const fmtCorta = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
         const urlSorteo = id => `${window.location.origin}${window.location.pathname}?s=${id}`;
 
@@ -1400,8 +1364,7 @@
                 const reglas = Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, participantesJson.reglas || {});
                 const r = await rpcAdmin('crear_sorteo', {
                     p_participantes: participantesJson.participantes,
-                    p_reglas: reglas,
-                    p_revelar_desde: deInputLocal(document.getElementById('campo-revelacion').value)
+                    p_reglas: reglas
                 });
 
                 const url = urlSorteo(r.id);
@@ -1462,9 +1425,9 @@
                     <a class="btn-mini" href="${escaparHTML(urlSorteo(s.id))}" target="_blank" rel="noopener" style="text-decoration:none">↗ Abrir</a>
                 </div>
                 <div class="sorteo-fila">
-                    <span>🎉 Revelación:</span>
-                    <input class="campo campo-fecha" type="datetime-local" value="${s.revelar_desde ? aInputLocal(new Date(s.revelar_desde)) : ''}">
-                    <button class="btn-mini oro" data-accion="fecha">Guardar</button>
+                    ${s.revelado
+                        ? '<span class="estado-chip si">🎉 Revelación final activada</span><button class="btn-mini" data-accion="revelar">Ocultar</button>'
+                        : '<button class="btn-mini oro" data-accion="revelar">🎉 Activar revelación final</button>'}
                 </div>
                 <ul class="personas"></ul>
                 <div class="sorteo-fila" style="justify-content:flex-end">
@@ -1493,17 +1456,15 @@
 
             div.querySelector('[data-accion="copiar"]').onclick = (e) => copiarEnlace(urlSorteo(s.id), e.currentTarget);
 
-            div.querySelector('[data-accion="fecha"]').onclick = async (e) => {
-                const btn = e.currentTarget;
-                const valor = div.querySelector('input[type="datetime-local"]').value;
-                btn.disabled = true;
-                try {
-                    await rpcAdmin('admin_fecha_revelacion', { p_sorteo: s.id, p_revelar_desde: deInputLocal(valor) });
-                    btn.textContent = '✅ Guardado';
-                    setTimeout(() => { btn.textContent = 'Guardar'; btn.disabled = false; }, 1800);
-                } catch (err) {
-                    if (err.message !== '__PIN__') { alert('Error: ' + err.message); btn.disabled = false; }
-                }
+            div.querySelector('[data-accion="revelar"]').onclick = async (e) => {
+                const activar = !s.revelado;
+                const msg = activar
+                    ? '¿Activar la revelación final? Todos podrán ver quién regalaba a quién.'
+                    : '¿Ocultar de nuevo la revelación final?';
+                if (!confirm(msg)) return;
+                e.currentTarget.disabled = true;
+                try { await rpcAdmin('admin_revelacion', { p_sorteo: s.id, p_revelado: activar }); if (activar) { confeti(); campanitas(.6); } cargarSorteosAdmin(); }
+                catch (err) { if (err.message !== '__PIN__') alert('Error: ' + err.message); }
             };
 
             div.querySelector('[data-accion="borrar"]').onclick = async (e) => {
@@ -1587,7 +1548,7 @@
                     <div id="zona-revelacion"></div>
                     ${htmlNormas(filas[0].reglas || {})}
                 `;
-                pintarRevelacion(filas[0].revelar_desde);
+                pintarRevelacion(filas[0].revelado);
                 const grid = document.getElementById('regalos');
 
                 filas.forEach(({ nombre, visto }, i) => {
@@ -1613,6 +1574,7 @@
                 const filas = await rpc('estado_sorteo', { p_sorteo: sorteoId });
                 (filas || []).forEach(({ nombre, visto }) => marcarBoton(nombre, visto));
                 pintarProgreso();
+                if (filas && filas[0]) pintarRevelacion(filas[0].revelado);
             } catch { /* sin conexión: se mantiene lo que hay */ }
         }
 
@@ -1672,18 +1634,14 @@
 
         /* ---------- Revelación final ---------- */
 
-        let relojRevelacion = null;
-
-        function pintarRevelacion(revelarDesde) {
+        function pintarRevelacion(revelado) {
             const zona = document.getElementById('zona-revelacion');
             if (!zona) return;
-            clearInterval(relojRevelacion);
-            if (!revelarDesde) { zona.innerHTML = ''; return; }
+            const estado = revelado ? 'si' : 'no';
+            if (zona.dataset.estado === estado) return;
+            zona.dataset.estado = estado;
 
-            const fecha = new Date(revelarDesde);
-            const fmt = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
-
-            if (Date.now() >= fecha.getTime()) {
+            if (revelado) {
                 zona.innerHTML = `
                     <div class="revelacion">
                         <div class="revelacion-titulo">🎉 ¡Llegó la revelación!</div>
@@ -1691,26 +1649,13 @@
                         <button class="btn btn-final" id="btn-final">🎁 Ver quién regalaba a quién</button>
                     </div>`;
                 document.getElementById('btn-final').onclick = verResultadoFinal;
-                return;
+            } else {
+                zona.innerHTML = `
+                    <div class="revelacion">
+                        <div class="revelacion-titulo">🎉 Revelación final</div>
+                        <p>El día del intercambio el organizador desvelará quién regalaba a quién. ¡Shhh, hasta entonces es secreto! 🤫</p>
+                    </div>`;
             }
-
-            zona.innerHTML = `
-                <div class="revelacion">
-                    <div class="revelacion-titulo">🎉 Revelación final</div>
-                    <p>El <strong>${escaparHTML(fmt.format(fecha))}</strong> se desvelará quién regalaba a quién.</p>
-                    <div class="reloj" id="reloj"></div>
-                </div>`;
-
-            const tic = () => {
-                const ms = fecha.getTime() - Date.now();
-                if (ms <= 0) { pintarRevelacion(revelarDesde); return; }
-                const s = Math.floor(ms / 1000);
-                const partes = [[Math.floor(s / 86400), 'días'], [Math.floor(s % 86400 / 3600), 'horas'], [Math.floor(s % 3600 / 60), 'min'], [s % 60, 'seg']];
-                document.getElementById('reloj').innerHTML = partes
-                    .map(([v, l]) => `<div>${String(v).padStart(2, '0')}<small>${l}</small></div>`).join('');
-            };
-            tic();
-            relojRevelacion = setInterval(tic, 1000);
         }
 
         async function verResultadoFinal() {
@@ -1723,8 +1668,8 @@
                 btn.disabled = false;
                 btn.textContent = '🎁 Ver quién regalaba a quién';
                 if (!r.disponible) {
-                    alert('Todavía no es la hora de la revelación. ¡Un poco de paciencia!');
-                    pintarRevelacion(r.revelar_desde);
+                    alert('La revelación todavía no está activada. ¡Un poco de paciencia!');
+                    pintarRevelacion(false);
                     return;
                 }
                 const ul = document.getElementById('final-lista');
