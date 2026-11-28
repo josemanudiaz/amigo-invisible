@@ -2,472 +2,1030 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#06141f">
     <title>Amigo Invisible · Noche de Regalos</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎄</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --night-1: #071b16;
-            --night-2: #113227;
-            --night-3: #2a090d;
-            --paper: #fffdf8;
-            --paper-warm: #f8f2e4;
-            --crimson: #b91c1c;
-            --crimson-deep: #7f1d1d;
-            --pine: #166534;
-            --pine-deep: #052e16;
-            --gold: #eab308;
-            --gold-bright: #fde047;
-            --ink: #1e293b;
-            --ink-soft: #475569;
+            --cielo-1: #040b16;
+            --cielo-2: #0b1f33;
+            --cielo-3: #17324a;
+            --oro: #fbbf24;
+            --oro-claro: #fde68a;
+            --texto: #f1f5f9;
+            --texto-suave: #cbd5e1;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body { margin: 0; min-height: 100%; }
 
         body {
-            margin: 0;
             min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--texto);
             background:
-                radial-gradient(circle at 20% 10%, rgba(253, 224, 71, 0.12), transparent 35%),
-                radial-gradient(circle at 80% 18%, rgba(220, 38, 38, 0.16), transparent 40%),
-                linear-gradient(165deg, var(--night-1) 0%, var(--night-2) 52%, var(--night-3) 100%);
-            color: var(--ink);
+                radial-gradient(ellipse at 18% 12%, rgba(253, 230, 138, 0.10), transparent 40%),
+                radial-gradient(ellipse at 85% 30%, rgba(56, 189, 248, 0.08), transparent 45%),
+                linear-gradient(180deg, var(--cielo-1) 0%, var(--cielo-2) 45%, var(--cielo-3) 100%);
+            background-attachment: fixed;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 2.5rem 1rem 1.75rem;
-            position: relative;
+            align-items: flex-start;
+            padding: 64px 14px 34vh;
             overflow-x: hidden;
         }
 
-        .string-lights {
+        /* ---------- Cielo ---------- */
+        .estrellas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .estrella {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: brillar 3s ease-in-out infinite;
+        }
+        @keyframes brillar { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+
+        .luna {
+            position: fixed;
+            top: 9vh; left: 8vw;
+            width: 78px; height: 78px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fffbea 0%, #fde68a 55%, #fbbf24 100%);
+            box-shadow: 0 0 40px 12px rgba(253, 230, 138, .35), 0 0 120px 40px rgba(253, 230, 138, .12);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .luna::before, .luna::after {
+            content: ""; position: absolute; border-radius: 50%; background: rgba(217, 119, 6, .18);
+        }
+        .luna::before { width: 16px; height: 16px; top: 22px; left: 40px; }
+        .luna::after { width: 10px; height: 10px; top: 46px; left: 22px; }
+
+        .trineo {
+            position: fixed;
+            top: 14vh;
+            left: 0;
+            font-size: 1.5rem;
+            white-space: nowrap;
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 0 6px rgba(253, 230, 138, .6));
+            animation: volar 32s linear infinite;
+            animation-delay: 3s;
+            transform: translateX(110vw);
+        }
+        .trineo .estela { font-size: .8rem; opacity: .8; letter-spacing: 2px; }
+        @keyframes volar {
+            0%   { transform: translate(110vw, 0) rotate(-4deg); }
+            25%  { transform: translate(75vw, -18px) rotate(3deg); }
+            50%  { transform: translate(40vw, 6px) rotate(-3deg); }
+            75%  { transform: translate(5vw, -14px) rotate(3deg); }
+            100% { transform: translate(-40vw, 0) rotate(-4deg); }
+        }
+
+        #nieve { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+        #confeti { position: fixed; inset: 0; z-index: 80; pointer-events: none; }
+
+        /* ---------- Paisaje ---------- */
+        .paisaje {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            height: 30vh;
+            min-height: 170px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .paisaje svg { width: 100%; height: 100%; display: block; }
+        .ventana { animation: luzVentana 4s ease-in-out infinite; }
+        @keyframes luzVentana { 0%, 100% { opacity: 1; } 50% { opacity: .65; } }
+
+        /* ---------- Guirnalda ---------- */
+        .guirnalda {
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 28px;
+            height: 44px;
+            z-index: 30;
+            pointer-events: none;
             display: flex;
-            justify-content: space-evenly;
-            align-items: flex-start;
-            background: rgba(5, 18, 14, 0.75);
-            border-bottom: 1px solid rgba(234, 179, 8, 0.35);
-            z-index: 20;
-            pointer-events: none;
+            justify-content: space-around;
+            background:
+                radial-gradient(ellipse 60px 18px at 50% -6px, transparent 16px, #0f2d1f 17px, #0f2d1f 19px, transparent 20px) 0 0 / 64px 30px repeat-x;
+        }
+        .bombilla {
+            position: relative;
+            width: 12px; height: 18px;
+            margin-top: 10px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: parpadeo 2.2s ease-in-out infinite;
+        }
+        .bombilla::before {
+            content: ""; position: absolute; top: -5px; left: 3px; width: 6px; height: 6px;
+            background: #334155; border-radius: 2px;
+        }
+        .bombilla:nth-child(odd) { margin-top: 16px; }
+        .bombilla:nth-child(5n+1) { background: #ef4444; --g: #ef4444; animation-delay: 0s; }
+        .bombilla:nth-child(5n+2) { background: #facc15; --g: #facc15; animation-delay: .4s; }
+        .bombilla:nth-child(5n+3) { background: #22c55e; --g: #22c55e; animation-delay: .8s; }
+        .bombilla:nth-child(5n+4) { background: #38bdf8; --g: #38bdf8; animation-delay: 1.2s; }
+        .bombilla:nth-child(5n+5) { background: #e879f9; --g: #e879f9; animation-delay: 1.6s; }
+        @keyframes parpadeo {
+            0%, 100% { opacity: .5; box-shadow: 0 0 4px var(--g); }
+            50% { opacity: 1; box-shadow: 0 0 16px 3px var(--g); }
         }
 
-        .bulb {
-            width: 11px;
-            height: 15px;
-            border-radius: 0 0 999px 999px;
-            margin-top: 2px;
-            animation: twinkle 2.4s ease-in-out infinite;
-        }
-
-        .bulb:nth-child(4n+1) { background: #ef4444; box-shadow: 0 0 10px #ef4444; animation-delay: 0s; }
-        .bulb:nth-child(4n+2) { background: #fde047; box-shadow: 0 0 10px #fde047; animation-delay: 0.6s; }
-        .bulb:nth-child(4n+3) { background: #22c55e; box-shadow: 0 0 10px #22c55e; animation-delay: 1.2s; }
-        .bulb:nth-child(4n+4) { background: #38bdf8; box-shadow: 0 0 10px #38bdf8; animation-delay: 1.8s; }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.55; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.08); }
-        }
-
-        .snowflakes {
+        .btn-sonido {
             position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
+            bottom: calc(14px + env(safe-area-inset-bottom)); right: 14px;
+            z-index: 40;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(251, 191, 36, .5);
+            background: rgba(5, 20, 30, .7);
+            backdrop-filter: blur(6px);
+            font-size: 1.2rem;
+            cursor: pointer;
         }
 
-        .flake {
-            position: absolute;
-            top: -24px;
-            color: rgba(255, 255, 255, 0.32);
-            animation: drift linear infinite;
-            user-select: none;
-        }
-
-        @keyframes drift {
-            0% { transform: translateY(-24px) translateX(0) rotate(0deg); }
-            50% { transform: translateY(50vh) translateX(16px) rotate(180deg); }
-            100% { transform: translateY(108vh) translateX(-14px) rotate(360deg); }
-        }
-
+        /* ---------- Tarjeta ---------- */
         .card {
             position: relative;
             z-index: 5;
             width: 100%;
-            max-width: 510px;
-            background: linear-gradient(180deg, var(--paper) 0%, var(--paper-warm) 100%);
-            border-radius: 26px;
-            padding: 2.2rem 1.5rem 1.8rem;
+            max-width: 560px;
+            margin-top: 14px;
+            padding: 2.6rem 1.25rem 1.6rem;
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(18, 58, 44, .86) 0%, rgba(8, 28, 24, .92) 100%);
+            border: 1.5px solid rgba(251, 191, 36, .45);
             box-shadow:
-                0 28px 65px rgba(0, 0, 0, 0.6),
-                0 0 0 2px rgba(234, 179, 8, 0.45),
-                inset 0 0 0 6px rgba(255, 255, 255, 0.7);
+                0 30px 80px rgba(0, 0, 0, .55),
+                inset 0 0 0 6px rgba(255, 255, 255, .03),
+                0 0 60px rgba(251, 191, 36, .08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             text-align: center;
         }
 
-        .seal {
+        .techo-nieve {
             position: absolute;
-            top: -14px;
-            right: 22px;
-            background: linear-gradient(135deg, var(--gold-bright), var(--gold));
-            color: #422006;
-            font-size: 0.72rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 0.35rem 0.75rem;
-            border-radius: 999px;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
-            border: 2px solid #fffdf8;
+            top: -14px; left: -6px; right: -6px;
+            height: 44px;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .25));
+        }
+        .techo-nieve svg { width: 100%; height: 100%; display: block; }
+
+        .acebo {
+            position: absolute;
+            top: -26px; left: -18px;
+            width: 82px; height: 82px;
+            transform: rotate(-18deg);
+            filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .35));
+            pointer-events: none;
+            z-index: 2;
         }
 
-        .eyebrow {
-            display: inline-block;
-            font-size: 0.8rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--pine);
-            background: rgba(22, 101, 52, 0.1);
-            padding: 0.3rem 0.8rem;
+        .sello {
+            position: absolute;
+            top: -16px; right: 18px;
+            z-index: 2;
+            padding: .4rem .85rem;
             border-radius: 999px;
-            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--oro-claro), var(--oro));
+            color: #451a03;
+            font-weight: 900;
+            font-size: .72rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            border: 2px solid #fffbeb;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
         }
 
         h1 {
-            margin: 0 0 1rem;
-            font-size: 2.25rem;
-            font-weight: 900;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-deep) 100%);
+            margin: .6rem 0 .1rem;
+            font-family: "Mountains of Christmas", "Nunito", cursive;
+            font-size: clamp(2.6rem, 11vw, 3.6rem);
+            line-height: 1;
+            background: linear-gradient(180deg, #fffbeb 0%, var(--oro-claro) 35%, var(--oro) 70%, #d97706 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 3px 0 rgba(120, 53, 15, .55)) drop-shadow(0 0 18px rgba(251, 191, 36, .35));
         }
 
-        .subtitle {
-            margin: 0 0 1rem;
-            font-size: 0.94rem;
-            color: var(--ink-soft);
-            line-height: 1.45;
+        .lema {
+            margin: .35rem 0 .9rem;
+            font-size: .95rem;
+            color: var(--texto-suave);
         }
 
-        .familia-tag {
-            display: inline-block;
-            margin: -0.4rem 0 1rem;
-            font-weight: 800;
-            color: var(--crimson-deep);
-            background: rgba(185, 28, 28, 0.08);
-            padding: 0.3rem 0.85rem;
+        .cuenta-atras {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            margin-bottom: 1.2rem;
+            padding: .4rem .9rem;
             border-radius: 999px;
-            font-size: 0.9rem;
+            background: rgba(220, 38, 38, .18);
+            border: 1px solid rgba(248, 113, 113, .45);
+            color: #fecaca;
+            font-weight: 800;
+            font-size: .88rem;
         }
 
-        .rules-box {
-            background: #ffffff;
-            border: 1px solid #e2d9c5;
-            border-top: 4px solid var(--pine);
-            border-radius: 18px;
-            padding: 1rem 1.05rem;
-            margin-bottom: 1.25rem;
+        .error {
+            color: #fecaca;
+            background: rgba(127, 29, 29, .45);
+            border: 1px solid rgba(248, 113, 113, .5);
+            border-radius: 14px;
+            padding: .8rem 1rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .cargando { color: var(--texto-suave); font-weight: 700; }
+        .cargando span { display: inline-block; animation: bote 1s ease-in-out infinite; }
+        @keyframes bote { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        /* Banda de bastón de caramelo */
+        .caramelo {
+            position: relative;
+            padding: .9rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .06);
+            font-weight: 800;
+            line-height: 1.4;
+        }
+        .caramelo::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 3px;
+            background: repeating-linear-gradient(45deg, #ef4444 0 10px, #fff 10px 20px);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        .caramelo small { display: block; font-weight: 700; color: var(--oro-claro); margin-top: .2rem; }
+
+        .progreso {
+            margin: 0 auto 1.1rem;
+            max-width: 360px;
+            font-size: .85rem;
+            color: var(--texto-suave);
+            font-weight: 700;
+        }
+        .progreso-pista {
+            margin-top: .4rem;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .1);
+            overflow: hidden;
+        }
+        .progreso-barra {
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: repeating-linear-gradient(45deg, #ef4444 0 8px, #fca5a5 8px 16px);
+            transition: width .6s ease;
+        }
+
+        details.normas {
+            margin-top: 1.4rem;
             text-align: left;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+            border: 1px dashed rgba(251, 191, 36, .45);
+            border-radius: 16px;
+            background: rgba(0, 0, 0, .18);
+            padding: .2rem 1rem;
         }
-
-        .rules-title {
-            font-size: 0.82rem;
+        details.normas summary {
+            cursor: pointer;
+            padding: .7rem 0;
             font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--pine-deep);
-            margin: 0 0 0.6rem;
+            color: var(--oro-claro);
+            list-style: none;
+        }
+        details.normas summary::-webkit-details-marker { display: none; }
+        details.normas summary::after { content: " ▾"; }
+        details.normas[open] summary::after { content: " ▴"; }
+        details.normas ul {
+            list-style: none;
+            margin: 0 0 .9rem;
+            padding: 0;
+            display: grid;
+            gap: .5rem;
+            font-size: .9rem;
+            color: var(--texto);
+        }
+        details.normas li { display: flex; gap: .55rem; line-height: 1.4; }
+
+        /* ---------- Regalos ---------- */
+        .regalos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+            gap: 1.1rem .5rem;
         }
 
-        .rules-list {
-            list-style: none;
-            margin: 0;
+        .btn-regalo {
+            position: relative;
+            appearance: none;
+            border: 0;
+            background: none;
             padding: 0;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            cursor: pointer;
+            font-family: inherit;
+            color: inherit;
+        }
+        .btn-regalo .gift { animation: flotar 3.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+        .btn-regalo:hover:not(:disabled) .gift,
+        .btn-regalo:focus-visible .gift { animation: menear .7s ease-in-out infinite; }
+        .btn-regalo:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; border-radius: 12px; }
+
+        @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes menear {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-6deg) translateY(-3px); }
+            75% { transform: rotate(6deg) translateY(-3px); }
+        }
+
+        .gift {
+            position: relative;
+            font-size: 10px;
+            width: 10em;
+            height: 12em;
             display: flex;
             flex-direction: column;
-            gap: 0.48rem;
-            font-size: 0.88rem;
-            color: var(--ink);
+            align-items: center;
+            justify-content: flex-end;
+            filter: drop-shadow(0 .9em 1em rgba(0, 0, 0, .45));
+        }
+        .tapa {
+            position: relative;
+            z-index: 2;
+            width: 9.6em;
+            height: 2.3em;
+            margin-bottom: -.25em;
+            border-radius: .5em;
+            background: var(--papel);
+            box-shadow: inset 0 -.35em 0 rgba(0, 0, 0, .2), inset 0 .25em 0 rgba(255, 255, 255, .18);
+            transition: transform .3s ease;
+        }
+        .tapa::before, .caja::before {
+            content: "";
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 1.6em;
+            transform: translateX(-50%);
+            background: var(--cinta);
+            box-shadow: inset .25em 0 0 rgba(255, 255, 255, .25), inset -.25em 0 0 rgba(0, 0, 0, .15);
+        }
+        .caja {
+            position: relative;
+            width: 8.6em;
+            height: 7.4em;
+            border-radius: .3em .3em .7em .7em;
+            background: var(--papel);
+            box-shadow: inset 0 .9em 0 rgba(0, 0, 0, .18), inset -.6em 0 0 rgba(0, 0, 0, .1);
+        }
+        .lazo {
+            position: absolute;
+            left: 50%;
+            bottom: 100%;
+            width: 0; height: 0;
+        }
+        .lazo::before, .lazo::after {
+            content: "";
+            position: absolute;
+            bottom: -.5em;
+            width: 2.7em;
+            height: 1.9em;
+            border: .6em solid var(--cinta);
+            border-radius: 50%;
+            box-shadow: inset 0 0 0 .1em rgba(0, 0, 0, .1);
+        }
+        .lazo::before { right: -.1em; transform: rotate(-22deg); transform-origin: right bottom; }
+        .lazo::after { left: -.1em; transform: rotate(22deg); transform-origin: left bottom; }
+        .nudo {
+            position: absolute;
+            left: 50%; top: -.75em;
+            z-index: 3;
+            width: 1.6em; height: 1.4em;
+            transform: translateX(-50%);
+            border-radius: 40%;
+            background: var(--cinta);
+            box-shadow: inset 0 -.2em 0 rgba(0, 0, 0, .2);
         }
 
-        .rules-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            line-height: 1.38;
+        /* Papeles de regalo */
+        .p0 { --papel: radial-gradient(circle, rgba(255,255,255,.35) .18em, transparent .22em) 0 0 / 1.3em 1.3em, linear-gradient(180deg, #ef4444, #991b1b); --cinta: #facc15; }
+        .p1 { --papel: repeating-linear-gradient(45deg, #16a34a 0 .8em, #166534 .8em 1.6em); --cinta: #ef4444; }
+        .p2 { --papel: radial-gradient(circle, rgba(255,255,255,.55) .15em, transparent .2em) 0 0 / 1.1em 1.1em, linear-gradient(180deg, #3b82f6, #1e3a8a); --cinta: #e2e8f0; }
+        .p3 { --papel: repeating-linear-gradient(-45deg, #fff 0 .8em, #dc2626 .8em 1.6em); --cinta: #15803d; }
+        .p4 { --papel: radial-gradient(circle, rgba(253,224,71,.7) .16em, transparent .21em) 0 0 / 1.2em 1.2em, linear-gradient(180deg, #a855f7, #6b21a8); --cinta: #fde047; }
+        .p5 { --papel: radial-gradient(circle, rgba(255,255,255,.6) .17em, transparent .22em) .6em .6em / 1.2em 1.2em, linear-gradient(180deg, #fbbf24, #b45309); --cinta: #b91c1c; }
+
+        .etiqueta {
+            position: absolute;
+            left: 50%;
+            bottom: 26px;
+            z-index: 4;
+            max-width: 92%;
+            transform: translateX(-50%) rotate(-4deg);
+            padding: .28rem .6rem .28rem 1rem;
+            border-radius: 4px 8px 8px 4px;
+            background: #fffbeb;
+            color: #3f1d0b;
+            font-weight: 900;
+            font-size: .82rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, .35);
+        }
+        .etiqueta::before {
+            content: "";
+            position: absolute;
+            left: .35rem; top: 50%;
+            width: 5px; height: 5px;
+            margin-top: -2.5px;
+            border-radius: 50%;
+            background: #a16207;
         }
 
-        .timer-alert {
-            margin-top: 0.8rem;
-            padding: 0.65rem 0.8rem;
-            background: linear-gradient(135deg, #fef2f2, #fee2e2);
-            border: 1px solid #fca5a5;
-            border-radius: 12px;
-            color: var(--crimson-deep);
-            font-size: 0.86rem;
-            font-weight: 800;
-            text-align: center;
-            line-height: 1.38;
-        }
+        .btn-regalo:disabled { cursor: not-allowed; }
+        .btn-regalo:disabled .gift { animation: none; filter: grayscale(.75) brightness(.7) drop-shadow(0 .6em .8em rgba(0,0,0,.4)); }
+        .btn-regalo:disabled .tapa { transform: translate(2.4em, -1.2em) rotate(24deg); }
+        .btn-regalo:disabled .etiqueta { background: #cbd5e1; color: #475569; }
+        .btn-regalo:disabled .etiqueta::after { content: " ✓"; color: #15803d; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-        }
-
+        /* ---------- Botones generales ---------- */
         .btn {
             appearance: none;
-            border: none;
-            border-radius: 15px;
-            padding: 0.95rem 0.75rem;
+            border: 0;
+            border-radius: 16px;
             font-family: inherit;
-            font-size: 0.98rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.14s ease, box-shadow 0.2s ease, filter 0.2s ease;
-        }
-
-        .btn:active:not(:disabled) { transform: scale(0.96); }
-
-        .btn-person {
-            position: relative;
-            background: linear-gradient(180deg, #dc2626 0%, var(--crimson-deep) 100%);
-            color: #ffffff;
-            box-shadow: 0 6px 16px rgba(127, 29, 29, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-            border: 1px solid rgba(253, 224, 71, 0.35);
-        }
-
-        .btn-person:hover:not(:disabled) {
-            filter: brightness(1.07);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(127, 29, 29, 0.35);
-        }
-
-        .btn-person:disabled {
-            background: #e2e8f0;
-            color: #94a3b8;
-            border-color: #cbd5e1;
-            box-shadow: none;
-            cursor: not-allowed;
-            text-decoration: line-through;
-        }
-
-        .btn-action {
-            width: 100%;
-            background: linear-gradient(180deg, #15803d 0%, var(--pine-deep) 100%);
-            color: #ffffff;
-            padding: 1.05rem;
-            font-size: 1.05rem;
-            box-shadow: 0 8px 20px rgba(5, 46, 22, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-            border: 1px solid rgba(253, 224, 71, 0.4);
-        }
-
-        .btn-action:disabled { opacity: 0.55; cursor: not-allowed; }
-
-        .aviso-org {
-            margin-top: 1rem;
-            padding: 0.7rem 0.85rem;
-            background: #fffbeb;
-            border: 1px solid #fcd34d;
-            border-radius: 12px;
-            color: #78350f;
-            font-size: 0.84rem;
-            line-height: 1.4;
-            text-align: left;
-        }
-
-        .familia-link {
-            margin-top: 1.15rem;
-            background: #ffffff;
-            border: 1.5px dashed #cbd5e1;
-            border-radius: 14px;
-            padding: 0.85rem;
-            text-align: left;
-        }
-
-        .familia-link-titulo {
             font-weight: 900;
-            color: var(--pine-deep);
-            font-size: 0.95rem;
+            font-size: 1.02rem;
+            cursor: pointer;
+            padding: 1rem;
+            transition: transform .15s ease, filter .2s ease;
         }
+        .btn:active:not(:disabled) { transform: scale(.96); }
+        .btn:disabled { opacity: .55; cursor: not-allowed; }
 
-        .familia-link-miembros {
-            font-size: 0.82rem;
-            color: var(--ink-soft);
-            margin: 0.2rem 0 0.55rem;
-        }
-
-        .link-box {
-            font-size: 0.75rem;
-            word-break: break-all;
-            color: #334155;
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 0.55rem;
-        }
-
-        .btn-copy {
-            margin-top: 0.7rem;
+        .btn-magia {
             width: 100%;
-            background: linear-gradient(180deg, var(--night-2) 0%, var(--night-1) 100%);
-            color: var(--gold-bright);
-            border: 1px solid rgba(234, 179, 8, 0.45);
-            padding: 0.82rem;
-            font-size: 0.92rem;
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 60%, #7f1d1d 100%);
+            border: 2px solid var(--oro);
+            box-shadow: 0 10px 26px rgba(127, 29, 29, .55), inset 0 2px 0 rgba(255, 255, 255, .3);
+            font-size: 1.15rem;
+        }
+        .btn-magia::after {
+            content: "";
+            position: absolute;
+            top: 0; bottom: 0; left: -60%;
+            width: 40%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
+            transform: skewX(-20deg);
+            animation: brillo 2.8s ease-in-out infinite;
+        }
+        @keyframes brillo { 0% { left: -60%; } 60%, 100% { left: 130%; } }
+
+        .btn-copiar {
+            width: 100%;
+            margin-top: .8rem;
+            color: #052e16;
+            background: linear-gradient(180deg, #86efac, #22c55e);
+            border: 2px solid #f0fdf4;
+            box-shadow: 0 8px 20px rgba(5, 46, 22, .5);
         }
 
+        /* ---------- Organizador ---------- */
+        .taller-titulo {
+            font-family: "Mountains of Christmas", cursive;
+            font-size: 1.7rem;
+            color: var(--oro-claro);
+            margin: 0 0 .2rem;
+        }
+        .familias {
+            display: grid;
+            gap: .7rem;
+            margin: 1rem 0 1.3rem;
+            text-align: left;
+        }
+        .familia {
+            padding: .75rem .85rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
+        }
+        .familia-nombre { font-weight: 900; color: var(--oro-claro); font-size: .88rem; margin-bottom: .45rem; }
+        .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+        .chip {
+            padding: .25rem .6rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .12);
+            font-size: .82rem;
+            font-weight: 700;
+        }
+        .chip.nino { background: rgba(56, 189, 248, .2); }
+
+        .carta {
+            position: relative;
+            margin-top: 1.2rem;
+            padding: 1.3rem 1rem 1rem;
+            border-radius: 12px;
+            background: #fffbeb;
+            color: #3f1d0b;
+            text-align: left;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, .45);
+            background-image: repeating-linear-gradient(180deg, transparent 0 27px, rgba(185, 28, 28, .12) 27px 28px);
+        }
+        .carta::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 8px;
+            border-radius: 12px 12px 0 0;
+            background: repeating-linear-gradient(90deg, #dc2626 0 14px, #fff 14px 20px, #15803d 20px 34px, #fff 34px 40px);
+        }
+        .carta-titulo { font-family: "Mountains of Christmas", cursive; font-size: 1.5rem; color: #991b1b; margin: 0 0 .3rem; }
+        .carta-url {
+            font-size: .78rem;
+            word-break: break-all;
+            background: rgba(255, 255, 255, .8);
+            border: 1px dashed #d6b98c;
+            border-radius: 8px;
+            padding: .55rem;
+        }
+        .aviso {
+            margin-top: .8rem;
+            font-size: .82rem;
+            color: #78350f;
+            line-height: 1.4;
+        }
+
+        /* ---------- Modales ---------- */
         .overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(5, 16, 12, 0.88);
-            backdrop-filter: blur(6px);
-            padding: 1.5rem;
+            z-index: 60;
+            padding: 1.2rem;
             justify-content: center;
             align-items: center;
-            z-index: 50;
+            background: rgba(2, 8, 16, .82);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
+        .overlay.visible { display: flex; animation: aparecer .25s ease-out; }
+        @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
 
-        .modal-box {
-            background: var(--paper);
-            color: var(--ink);
+        .postal {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            padding: 1.6rem 1.3rem 1.3rem;
+            border-radius: 22px;
+            background: #fffbeb;
+            color: #3f1d0b;
+            text-align: center;
+            outline: 2px dashed rgba(220, 38, 38, .55);
+            outline-offset: -11px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, .6);
+            animation: pop .3s cubic-bezier(.2, 1.4, .4, 1);
+        }
+        @keyframes pop { from { transform: scale(.85) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+        .postal .gift { font-size: 7px; margin: 0 auto .4rem; }
+        .postal h2 { margin: .2rem 0 .4rem; font-size: 1.35rem; font-weight: 900; }
+        .postal h2 span { color: #b91c1c; }
+        .postal p { margin: 0; color: #78350f; font-size: .92rem; line-height: 1.45; }
+        .postal-acciones { display: flex; gap: .7rem; margin-top: 1.2rem; }
+        .btn-cancelar { flex: 1; background: #e7e5e4; color: #44403c; }
+        .btn-abrir { flex: 1.4; color: #fff; background: linear-gradient(180deg, #ef4444, #991b1b); box-shadow: 0 8px 18px rgba(153, 27, 27, .4); }
+
+        /* Escena de revelado */
+        #modal-reveal { background: radial-gradient(circle at 50% 45%, rgba(30, 64, 50, .92), rgba(2, 8, 16, .96) 70%); }
+        .escena {
+            position: relative;
             width: 100%;
             max-width: 380px;
-            border-radius: 24px;
-            padding: 2rem 1.5rem;
-            text-align: center;
-            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.6);
-            animation: revealPop 0.22s ease-out;
-        }
-
-        @keyframes revealPop {
-            from { opacity: 0; transform: scale(0.9) translateY(8px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .modal-actions {
             display: flex;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
-
-        .btn-cancel { flex: 1; background: #e2e8f0; color: #334155; }
-        .btn-confirm { flex: 1; background: linear-gradient(180deg, #dc2626, var(--crimson-deep)); color: #fff; }
-
-        .gift-reveal {
-            background: linear-gradient(155deg, var(--pine) 0%, var(--night-1) 58%, var(--night-3) 100%);
-            color: #ffffff;
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 35px rgba(234, 179, 8, 0.25), 0 25px 60px rgba(0, 0, 0, 0.65);
+        .rayos {
+            position: absolute;
+            top: -100px; left: 50%;
+            width: 520px; height: 520px;
+            margin-left: -260px;
+            border-radius: 50%;
+            background: repeating-conic-gradient(rgba(253, 230, 138, .22) 0 9deg, transparent 9deg 22deg);
+            -webkit-mask: radial-gradient(circle, #000 0%, transparent 65%);
+            mask: radial-gradient(circle, #000 0%, transparent 65%);
+            opacity: 0;
+            transform: scale(.2);
+            pointer-events: none;
         }
+        .escena.abierta .rayos { opacity: 1; transform: scale(1); transition: transform .8s ease-out, opacity .5s; animation: girar 14s linear infinite; }
+        @keyframes girar { from { rotate: 0deg; } to { rotate: 360deg; } }
 
+        .resultado {
+            position: relative;
+            z-index: 3;
+            min-height: 132px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(70px) scale(.4);
+        }
+        .escena.abierta .resultado { opacity: 1; transform: none; transition: transform .7s cubic-bezier(.2, 1.3, .4, 1) .15s, opacity .4s .15s; }
+        .resultado-intro { font-weight: 800; color: var(--texto-suave); font-size: 1rem; }
         .nombre-tocado {
-            font-size: 2.35rem;
-            font-weight: 900;
-            color: var(--gold-bright);
-            margin: 0.85rem 0;
-            text-shadow: 0 3px 14px rgba(0, 0, 0, 0.5);
+            font-family: "Mountains of Christmas", cursive;
+            font-size: clamp(2.6rem, 13vw, 3.6rem);
+            line-height: 1.05;
+            margin: .2rem 0 .6rem;
+            color: var(--oro-claro);
+            text-shadow: 0 3px 0 #92400e, 0 0 24px rgba(251, 191, 36, .7);
+            word-break: break-word;
         }
 
-        .progress-track {
-            width: 100%;
-            height: 9px;
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 999px;
-            overflow: hidden;
-            margin-top: 1rem;
+        .escena .gift { font-size: 17px; z-index: 2; }
+        .escena .tapa { transition: transform .75s cubic-bezier(.2, .8, .2, 1), opacity .5s ease .35s; }
+        .escena.temblar .gift { animation: temblor .9s ease-in-out; }
+        .escena.abierta .tapa { transform: translate(5em, -13em) rotate(55deg); opacity: 0; }
+        @keyframes temblor {
+            0%, 100% { transform: rotate(0); }
+            10% { transform: rotate(-8deg) scale(1.03); }
+            20% { transform: rotate(8deg); }
+            30% { transform: rotate(-10deg) scale(1.06); }
+            40% { transform: rotate(10deg); }
+            50% { transform: rotate(-12deg) scale(1.08); }
+            60% { transform: rotate(12deg); }
+            70% { transform: rotate(-6deg) scale(1.1) translateY(-6px); }
+            85% { transform: rotate(4deg) translateY(-10px); }
         }
 
-        .progress-bar {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--gold), var(--gold-bright));
-            transition: width 1s linear;
+        .cuenta {
+            position: relative;
+            z-index: 3;
+            margin-top: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            opacity: 0;
+            font-weight: 800;
+            color: var(--texto-suave);
+            text-align: left;
+        }
+        .escena.abierta .cuenta { opacity: 1; transition: opacity .3s .4s; }
+        .anillo { position: relative; width: 56px; height: 56px; }
+        .anillo svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .anillo circle { fill: none; stroke-width: 6; }
+        .anillo .fondo { stroke: rgba(255, 255, 255, .15); }
+        .anillo .avance { stroke: var(--oro); stroke-linecap: round; stroke-dasharray: 150.8; stroke-dashoffset: 0; }
+        .anillo span {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; font-weight: 900; color: var(--oro-claro);
         }
 
-        .timer-text {
-            font-size: 0.86rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-top: 0.65rem;
-            font-weight: 700;
+        .pie {
+            margin-top: 1.4rem;
+            font-size: .78rem;
+            color: rgba(203, 213, 225, .7);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            #nieve, .trineo { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="string-lights" aria-hidden="true">
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
-        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+    <div class="estrellas" id="estrellas" aria-hidden="true"></div>
+    <div class="luna" aria-hidden="true"></div>
+    <div class="trineo" aria-hidden="true"><span class="estela">✦ · ✧ · ✦</span> 🦌🦌🛷</div>
+
+    <div class="paisaje" aria-hidden="true">
+        <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice">
+            <defs>
+                <g id="pino">
+                    <polygon points="0,-120 34,-62 18,-62 46,-18 -46,-18 -18,-62 -34,-62" fill="#0b3b2c"/>
+                    <polygon points="0,-120 18,-90 6,-86 0,-96 -6,-86 -18,-90" fill="#f8fafc"/>
+                    <polygon points="-34,-62 -18,-62 -10,-56 0,-64 10,-56 18,-62 34,-62 26,-52 0,-58 -26,-52" fill="#e2e8f0" opacity=".85"/>
+                    <rect x="-6" y="-18" width="12" height="18" fill="#3b2314"/>
+                </g>
+                <g id="casa">
+                    <rect x="-40" y="-60" width="80" height="60" fill="#5b3a29"/>
+                    <polygon points="-52,-58 0,-100 52,-58" fill="#7f1d1d"/>
+                    <path d="M-54,-56 L0,-102 L54,-56 L46,-52 C40,-46 34,-56 28,-50 C22,-44 16,-54 8,-48 C0,-42 -6,-54 -14,-48 C-22,-42 -28,-54 -36,-48 C-42,-44 -46,-50 -54,-56Z" fill="#f8fafc"/>
+                    <rect x="22" y="-108" width="12" height="30" fill="#44403c"/>
+                    <rect x="20" y="-112" width="16" height="6" fill="#f8fafc"/>
+                    <rect class="ventana" x="-30" y="-46" width="20" height="18" fill="#fde68a"/>
+                    <rect class="ventana" x="10" y="-46" width="20" height="18" fill="#fcd34d"/>
+                    <path d="M-30,-37 H-10 M-20,-46 V-28 M10,-37 H30 M20,-46 V-28" stroke="#5b3a29" stroke-width="2"/>
+                    <rect x="-8" y="-24" width="16" height="24" fill="#3f1d0b"/>
+                </g>
+            </defs>
+            <path d="M0,170 C180,120 320,150 470,128 C640,104 780,150 960,126 C1120,104 1280,140 1440,118 L1440,300 L0,300Z" fill="#c9d8e8" opacity=".55"/>
+            <use href="#pino" transform="translate(120,168) scale(.7)"/>
+            <use href="#pino" transform="translate(190,160) scale(.9)"/>
+            <use href="#pino" transform="translate(560,142) scale(.75)"/>
+            <use href="#pino" transform="translate(1010,140) scale(.8)"/>
+            <use href="#pino" transform="translate(1075,134) scale(.6)"/>
+            <use href="#pino" transform="translate(1340,130) scale(.85)"/>
+            <path d="M0,230 C200,190 360,226 560,206 C760,186 900,232 1100,210 C1260,192 1360,214 1440,200 L1440,300 L0,300Z" fill="#e8eff7"/>
+            <use href="#casa" transform="translate(330,222) scale(.95)"/>
+            <use href="#casa" transform="translate(860,214) scale(.8)"/>
+            <use href="#casa" transform="translate(1220,206) scale(1.05)"/>
+            <use href="#pino" transform="translate(250,230) scale(1.1)"/>
+            <use href="#pino" transform="translate(440,224) scale(.85)"/>
+            <use href="#pino" transform="translate(720,226) scale(1.2)"/>
+            <use href="#pino" transform="translate(960,218) scale(.9)"/>
+            <use href="#pino" transform="translate(1390,212) scale(1)"/>
+            <path d="M0,262 C240,238 480,272 720,254 C960,236 1200,268 1440,250 L1440,300 L0,300Z" fill="#ffffff"/>
+        </svg>
     </div>
 
-    <div class="snowflakes" id="snowflakes" aria-hidden="true"></div>
+    <canvas id="nieve" aria-hidden="true"></canvas>
+    <canvas id="confeti" aria-hidden="true"></canvas>
+
+    <div class="guirnalda" id="guirnalda" aria-hidden="true"></div>
+    <button class="btn-sonido" id="btn-sonido" aria-label="Activar o silenciar sonido">🔔</button>
 
     <main class="card">
-        <div class="seal">🎁 Navidad</div>
-        <div class="eyebrow">✦ Sorteo Familiar ✦</div>
-        <h1>🎄 Amigo Invisible</h1>
+        <div class="techo-nieve" id="techo-nieve" aria-hidden="true"></div>
+        <svg class="acebo" viewBox="0 0 100 100" aria-hidden="true">
+            <path d="M50 52 C38 40 22 46 12 34 C20 34 22 26 18 20 C28 24 32 18 34 10 C40 20 48 26 50 52Z" fill="#15803d"/>
+            <path d="M50 52 C36 42 30 28 34 10" stroke="#052e16" stroke-width="2" fill="none"/>
+            <path d="M52 52 C64 40 80 46 90 34 C82 34 80 26 84 20 C74 24 70 18 68 10 C62 20 54 26 52 52Z" fill="#16a34a"/>
+            <path d="M52 52 C66 42 72 28 68 10" stroke="#052e16" stroke-width="2" fill="none"/>
+            <circle cx="44" cy="56" r="8" fill="#dc2626"/><circle cx="58" cy="57" r="8" fill="#b91c1c"/><circle cx="51" cy="66" r="8" fill="#ef4444"/>
+            <circle cx="41" cy="53" r="2.4" fill="#fff" opacity=".7"/><circle cx="55" cy="54" r="2.4" fill="#fff" opacity=".7"/><circle cx="48" cy="63" r="2.4" fill="#fff" opacity=".7"/>
+        </svg>
+        <div class="sello">✦ Navidad ✦</div>
+
+        <h1>Amigo Invisible</h1>
+        <p class="lema">El sorteo de las tres familias</p>
+        <div class="cuenta-atras" id="cuenta-atras">⏳</div>
+
         <div id="contenido"></div>
+
+        <div class="pie">Hecho con ❤️ y mucho turrón</div>
     </main>
 
-    <div class="overlay" id="modal-confirm">
-        <div class="modal-box">
-            <div style="font-size: 2.4rem; margin-bottom: 0.4rem;">🎀</div>
-            <h2 style="margin: 0 0 0.5rem; font-size: 1.3rem;">¿Eres <span id="confirm-nombre"></span>?</h2>
-            <p class="subtitle" style="margin-bottom: 0;">Asegúrate de que nadie más esté mirando. Al pulsar verás tu resultado solo durante <strong>5 segundos</strong>.</p>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="cerrarConfirmacion()">Cancelar</button>
-                <button class="btn btn-confirm" id="btn-confirmar-ver">Sí, ver (5s)</button>
+    <!-- Confirmación -->
+    <div class="overlay" id="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="confirm-titulo">
+        <div class="postal">
+            <div id="confirm-regalo"></div>
+            <h2 id="confirm-titulo">¿Eres <span id="confirm-nombre"></span>?</h2>
+            <p>Asegúrate de que <strong>nadie más está mirando</strong> 👀<br>Tu regalo se abrirá y lo verás solo <strong>5 segundos</strong>.</p>
+            <div class="postal-acciones">
+                <button class="btn btn-cancelar" onclick="cerrarConfirmacion()">Cancelar</button>
+                <button class="btn btn-abrir" id="btn-confirmar-ver">🎁 ¡Soy yo, abrir!</button>
             </div>
         </div>
     </div>
 
-    <div class="overlay" id="modal-reveal">
-        <div class="modal-box gift-reveal">
-            <div style="font-size: 2.4rem;">🎅✨🎄</div>
-            <p style="margin: 0.45rem 0 0; opacity: 0.92;">Te ha tocado regalar a:</p>
-            <div class="nombre-tocado" id="resultado"></div>
-            <div class="progress-track">
-                <div class="progress-bar" id="progress-bar"></div>
+    <!-- Revelado -->
+    <div class="overlay" id="modal-reveal" role="dialog" aria-modal="true" aria-live="polite">
+        <div class="escena" id="escena">
+            <div class="rayos"></div>
+            <div class="resultado">
+                <div class="resultado-intro">🎅 Te ha tocado regalar a…</div>
+                <div class="nombre-tocado" id="resultado"></div>
             </div>
-            <p class="timer-text" id="contador">Solo visible 5s · Se cerrará en 5s...</p>
+            <div id="regalo-grande"></div>
+            <div class="cuenta">
+                <div class="anillo">
+                    <svg viewBox="0 0 56 56"><circle class="fondo" cx="28" cy="28" r="24"/><circle class="avance" id="anillo-avance" cx="28" cy="28" r="24"/></svg>
+                    <span id="contador">5</span>
+                </div>
+                <div>¡Memorízalo!<br>Se cerrará solo</div>
+            </div>
         </div>
     </div>
 
     <script>
         /* =====================================================
-           CONFIGURACIÓN SUPABASE  ← rellena estos dos valores
-           (Project Settings → API Keys). La clave publishable/anon
-           es pública por diseño: puede ir en el repositorio.
+           CONFIGURACIÓN SUPABASE
+           La clave publishable es pública por diseño.
            ===================================================== */
         const SUPABASE_URL = 'https://avfcgfyztxtbemykyvrx.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_W2exONJ3aqFMWfkSdSSa0w_UQRtBXme';
 
-        (function crearNieve() {
-            const cont = document.getElementById('snowflakes');
-            if (!cont) return;
-            const copos = ['❄', '❅', '✦', '❆'];
-            for (let i = 0; i < 18; i++) {
-                const span = document.createElement('span');
-                span.className = 'flake';
-                span.textContent = copos[i % copos.length];
-                span.style.left = `${(i * 5.8) % 100}%`;
-                span.style.fontSize = `${0.8 + (i % 4) * 0.25}rem`;
-                span.style.animationDuration = `${8 + (i % 6) * 2.2}s`;
-                span.style.animationDelay = `${-(i * 1.3)}s`;
-                cont.appendChild(span);
+        const reducirMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* =====================================================
+           DECORACIÓN
+           ===================================================== */
+
+        // Estrellas
+        (function () {
+            const cont = document.getElementById('estrellas');
+            for (let i = 0; i < 70; i++) {
+                const s = document.createElement('span');
+                s.className = 'estrella';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 65 + '%';
+                const t = Math.random() < .2 ? 3 : 2;
+                s.style.width = s.style.height = t + 'px';
+                s.style.animationDelay = (-Math.random() * 3) + 's';
+                s.style.animationDuration = (2 + Math.random() * 3) + 's';
+                cont.appendChild(s);
             }
         })();
 
-        /* ---------- Utilidades ---------- */
+        // Guirnalda
+        (function () {
+            const g = document.getElementById('guirnalda');
+            const n = Math.max(10, Math.round(window.innerWidth / 48));
+            for (let i = 0; i < n; i++) {
+                const b = document.createElement('span');
+                b.className = 'bombilla';
+                g.appendChild(b);
+            }
+        })();
+
+        // Nieve sobre la tarjeta (forma irregular)
+        (function () {
+            let d = 'M0,0 H500 V12 ';
+            let x = 500;
+            const pasos = [[-22, 10], [-18, 24], [-26, 12], [-14, 30], [-30, 14], [-20, 22], [-24, 11], [-16, 28], [-28, 13], [-22, 20], [-18, 12], [-26, 26], [-20, 14], [-24, 22], [-18, 11], [-30, 18], [-22, 12], [-26, 24], [-20, 13], [-22, 16], [-20, 12]];
+            let i = 0;
+            while (x > 0) {
+                const [dx, prof] = pasos[i % pasos.length];
+                const nx = Math.max(0, x + dx);
+                const mx = (x + nx) / 2;
+                d += `Q${mx},${prof * 1.4} ${nx},12 `;
+                x = nx; i++;
+            }
+            d += 'Z';
+            document.getElementById('techo-nieve').innerHTML =
+                `<svg viewBox="0 0 500 44" preserveAspectRatio="none"><path d="${d}" fill="#ffffff"/><path d="M0,0 H500 V6 H0Z" fill="#e2e8f0"/></svg>`;
+        })();
+
+        // Cuenta atrás a Nochebuena
+        (function () {
+            const hoy = new Date();
+            const y = hoy.getFullYear();
+            const d0 = new Date(y, hoy.getMonth(), hoy.getDate());
+            let diff = Math.round((new Date(y, 11, 24) - d0) / 86400000);
+            let txt;
+            if (diff === 0) txt = '🌟 ¡Hoy es Nochebuena!';
+            else if (diff === -1) txt = '🎄 ¡Feliz Navidad!';
+            else {
+                if (diff < -1) diff = Math.round((new Date(y + 1, 11, 24) - d0) / 86400000);
+                txt = diff === 1 ? '⏳ ¡Mañana es Nochebuena!' : `⏳ Faltan ${diff} días para Nochebuena`;
+            }
+            document.getElementById('cuenta-atras').textContent = txt;
+        })();
+
+        // Nieve animada
+        (function () {
+            if (reducirMovimiento) return;
+            const cv = document.getElementById('nieve');
+            const ctx = cv.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            let W, H, copos = [];
+
+            function tam() {
+                W = window.innerWidth; H = window.innerHeight;
+                cv.width = W * dpr; cv.height = H * dpr;
+                cv.style.width = W + 'px'; cv.style.height = H + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                const n = Math.round(Math.min(140, W * H / 9000));
+                copos = Array.from({ length: n }, () => nuevo(true));
+            }
+            function nuevo(inicio) {
+                const r = Math.random() * 2.6 + .8;
+                return { x: Math.random() * W, y: inicio ? Math.random() * H : -10, r, v: r * .35 + .25, fase: Math.random() * 6.28, amp: Math.random() * .8 + .2, a: Math.random() * .5 + .45 };
+            }
+            let t = 0;
+            function bucle() {
+                t += .01;
+                ctx.clearRect(0, 0, W, H);
+                for (const c of copos) {
+                    c.y += c.v;
+                    c.x += Math.sin(t * 2 + c.fase) * c.amp * .5 + .15;
+                    if (c.y > H + 10 || c.x > W + 10) Object.assign(c, nuevo(false));
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(255,255,255,${c.a})`;
+                    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                requestAnimationFrame(bucle);
+            }
+            window.addEventListener('resize', tam);
+            tam(); bucle();
+        })();
+
+        // Confeti
+        function confeti() {
+            if (reducirMovimiento) return;
+            const cv = document.getElementById('confeti');
+            const ctx = cv.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const W = window.innerWidth, H = window.innerHeight;
+            cv.width = W * dpr; cv.height = H * dpr;
+            cv.style.width = W + 'px'; cv.style.height = H + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            const colores = ['#ef4444', '#fbbf24', '#22c55e', '#f8fafc', '#38bdf8', '#e879f9', '#fde68a'];
+            const ox = W / 2, oy = H * .42;
+            const ps = Array.from({ length: 180 }, () => {
+                const ang = Math.random() * Math.PI * 2;
+                const vel = Math.random() * 9 + 4;
+                return {
+                    x: ox, y: oy,
+                    vx: Math.cos(ang) * vel, vy: Math.sin(ang) * vel - 5,
+                    w: Math.random() * 8 + 4, h: Math.random() * 5 + 3,
+                    rot: Math.random() * 6.28, vr: (Math.random() - .5) * .35,
+                    c: colores[Math.floor(Math.random() * colores.length)],
+                    redondo: Math.random() < .3
+                };
+            });
+            const inicio = performance.now();
+            (function frame(ahora) {
+                const t = ahora - inicio;
+                ctx.clearRect(0, 0, W, H);
+                for (const p of ps) {
+                    p.vy += .22; p.vx *= .985; p.vy *= .985;
+                    p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, 1 - t / 3200);
+                    ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+                    ctx.fillStyle = p.c;
+                    if (p.redondo) { ctx.beginPath(); ctx.arc(0, 0, p.h / 1.4, 0, 6.28); ctx.fill(); }
+                    else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.rot * 2)) + 1);
+                    ctx.restore();
+                }
+                if (t < 3300) requestAnimationFrame(frame);
+                else ctx.clearRect(0, 0, W, H);
+            })(inicio);
+        }
+
+        // Sonido de campanillas (sintetizado, sin archivos)
+        let sonidoActivo = true;
+        try { sonidoActivo = localStorage.getItem('ai_sonido') !== 'off'; } catch { }
+        let audioCtx = null;
+        const btnSonido = document.getElementById('btn-sonido');
+        function pintarSonido() { btnSonido.textContent = sonidoActivo ? '🔔' : '🔕'; }
+        pintarSonido();
+        btnSonido.onclick = () => {
+            sonidoActivo = !sonidoActivo;
+            try { localStorage.setItem('ai_sonido', sonidoActivo ? 'on' : 'off'); } catch { }
+            pintarSonido();
+            if (sonidoActivo) { prepararAudio(); campanitas(.5); }
+        };
+        function prepararAudio() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch { audioCtx = null; }
+        }
+        function campanitas(vol = 1) {
+            if (!sonidoActivo || !audioCtx) return;
+            const notas = [1318.5, 1568, 2093, 1760, 2637, 2093];
+            notas.forEach((f, i) => {
+                const t = audioCtx.currentTime + i * .12;
+                [[1, .12, 1.4], [2.76, .035, .5], [5.4, .015, .25]].forEach(([m, g, dur]) => {
+                    const o = audioCtx.createOscillator();
+                    const ga = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = f * m;
+                    ga.gain.setValueAtTime(.0001, t);
+                    ga.gain.exponentialRampToValueAtTime(g * vol, t + .008);
+                    ga.gain.exponentialRampToValueAtTime(.0001, t + dur);
+                    o.connect(ga).connect(audioCtx.destination);
+                    o.start(t); o.stop(t + dur + .05);
+                });
+            });
+        }
+
+        /* =====================================================
+           UTILIDADES
+           ===================================================== */
 
         async function rpc(funcion, args) {
             const resp = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${funcion}`, {
@@ -486,66 +1044,44 @@
             return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
-        function mostrarError(msg) {
-            contenedor.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">${escaparHTML(msg)}</p>`;
+        function htmlRegalo(clase) {
+            return `<div class="gift ${clase}"><div class="tapa"><div class="lazo"></div><div class="nudo"></div></div><div class="caja"></div></div>`;
         }
 
-        /* ---------- Arranque ---------- */
+        function mostrarError(msg) {
+            contenedor.innerHTML = `<p class="error">${escaparHTML(msg)}</p>`;
+        }
+
+        const cargandoHTML = (txt) => `<p class="cargando">${txt} <span>🎄</span></p>`;
+
+        /* =====================================================
+           ARRANQUE
+           ===================================================== */
 
         const params = new URLSearchParams(window.location.search);
         const sorteoId = params.get('s');
         const contenedor = document.getElementById('contenido');
         let participantesJson = null;
 
-        if (SUPABASE_URL.includes('TU-PROYECTO')) {
-            mostrarError('Falta configurar SUPABASE_URL y SUPABASE_KEY en index.html.');
-        } else if (params.has('data')) {
+        if (params.has('data')) {
             mostrarError('Este enlace es de una versión anterior de la página. Pide al organizador el enlace nuevo.');
         } else if (!sorteoId) {
-            contenedor.innerHTML = `
-                <div id="estado-error"></div>
-                <button class="btn btn-action" id="btn-generar" onclick="generarSorteo()" disabled>🎄 Crear sorteo</button>
-                <div id="zona-link"></div>
-            `;
+            contenedor.innerHTML = cargandoHTML('Preparando el taller de los elfos');
             cargarParticipantes();
         } else if (!/^[0-9a-f-]{36}$/i.test(sorteoId)) {
             mostrarError('El enlace del sorteo no es válido o está incompleto.');
         } else {
             cargarSorteo();
-            // Al volver a la pestaña, refresca quién lo ha visto ya
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') actualizarEstado();
             });
         }
 
-        function renderInstruccionesParticipante(reglas) {
-            const criterios = [
-                '<li>🎲 <span>Reparto aleatorio generado automáticamente sin intervención manual. Nadie conoce el resultado completo.</span></li>',
-                '<li>🎅 <span>A nadie puede tocarse a sí mismo.</span></li>',
-                reglas.evitarMismaFamilia
-                    ? '<li>🏠 <span>No se permite regalar a alguien de la misma familia.</span></li>'
-                    : '<li>🏠 <span>Se permite regalar dentro de la misma familia.</span></li>',
-                reglas.mismoGrupoEdad
-                    ? '<li>🧸 <span>Adultos regalan a adultos y niños regalan a niños.</span></li>'
-                    : '<li>🎁 <span>Sorteo abierto entre adultos y niños.</span></li>',
-                '<li>🔒 <span>Cada nombre solo se puede abrir una vez, desde cualquier móvil.</span></li>'
-            ];
-
-            return `
-                <section class="rules-box" aria-label="Instrucciones y reglas del sorteo">
-                    <div class="rules-title">📜 Cómo se ha hecho el sorteo y cómo participar</div>
-                    <ul class="rules-list">${criterios.join('')}</ul>
-                    <div class="timer-alert">⏱️ Pulsa en tu nombre y tienes 5 segundos para saber quién te ha tocado antes de que se oculte.</div>
-                </section>
-            `;
-        }
-
-        /* ---------- Modo organizador ---------- */
+        /* =====================================================
+           MODO ORGANIZADOR
+           ===================================================== */
 
         async function cargarParticipantes() {
-            const btnGenerar = document.getElementById('btn-generar');
-            const estadoError = document.getElementById('estado-error');
-
             try {
                 const resp = await fetch('./participantes.json', { cache: 'no-store' });
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -554,17 +1090,38 @@
                     throw new Error('Se necesitan al menos 2 participantes');
                 }
                 participantesJson = json;
-                btnGenerar.disabled = false;
+                pintarTaller();
             } catch (err) {
-                estadoError.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700;">Error al cargar participantes.json (${escaparHTML(err.message)}).</p>`;
+                mostrarError(`Error al cargar participantes.json (${err.message}).`);
             }
+        }
+
+        function pintarTaller() {
+            const lista = participantesJson.participantes;
+            const familias = [...new Set(lista.map(p => p.familia))];
+            const bloques = familias.map(f => `
+                <div class="familia">
+                    <div class="familia-nombre">🏠 Familia ${escaparHTML(f)}</div>
+                    <div class="chips">${lista.filter(p => p.familia === f).map(p =>
+                        `<span class="chip ${p.grupo === 'nino' ? 'nino' : ''}">${p.grupo === 'nino' ? '🧸' : '🎅'} ${escaparHTML(p.nombre)}</span>`).join('')}</div>
+                </div>`).join('');
+
+            contenedor.innerHTML = `
+                <h2 class="taller-titulo">El taller de los elfos</h2>
+                <p class="lema" style="margin-top:0">${lista.length} participantes listos para el sorteo</p>
+                <div class="familias">${bloques}</div>
+                <button class="btn btn-magia" id="btn-generar">✨ Hacer el sorteo mágico ✨</button>
+                <div id="zona-link"></div>
+            `;
+            document.getElementById('btn-generar').onclick = generarSorteo;
         }
 
         async function generarSorteo() {
             const btn = document.getElementById('btn-generar');
             const zona = document.getElementById('zona-link');
+            prepararAudio();
             btn.disabled = true;
-            btn.textContent = '⏳ Creando sorteo...';
+            btn.textContent = '🧝 Los elfos están sorteando…';
 
             try {
                 const reglas = Object.assign({ evitarMismaFamilia: true, mismoGrupoEdad: false }, participantesJson.reglas || {});
@@ -576,24 +1133,28 @@
                 const url = `${window.location.origin}${window.location.pathname}?s=${id}`;
                 btn.style.display = 'none';
                 zona.innerHTML = `
-                    <div class="aviso-org">✅ Sorteo creado. Envía <strong>este único enlace</strong> a todas las familias. Si recargas y creas otro, será un sorteo distinto.</div>
-                    <div class="familia-link">
-                        <div class="link-box">${escaparHTML(url)}</div>
-                        <button class="btn btn-copy" id="btn-copiar">📋 Copiar enlace para WhatsApp</button>
+                    <div class="carta">
+                        <div class="carta-titulo">📜 ¡Sorteo hecho!</div>
+                        <p style="margin:0 0 .6rem; font-weight:700;">Nadie conoce el resultado, ni siquiera tú. Manda este enlace a las tres familias:</p>
+                        <div class="carta-url">${escaparHTML(url)}</div>
+                        <button class="btn btn-copiar" id="btn-copiar">📋 Copiar enlace para WhatsApp</button>
+                        <div class="aviso">⚠️ Usa <strong>solo este enlace</strong>. Si recargas y haces otro sorteo, será distinto.</div>
                     </div>
                 `;
                 document.getElementById('btn-copiar').onclick = (e) => copiarEnlace(url, e.currentTarget);
+                confeti();
+                campanitas(.7);
             } catch (err) {
                 btn.disabled = false;
-                btn.textContent = '🎄 Crear sorteo';
-                zona.innerHTML = `<p class="subtitle" style="color:#b91c1c; font-weight:700; margin-top:1rem;">No se pudo crear el sorteo: ${escaparHTML(err.message)}</p>`;
+                btn.textContent = '✨ Hacer el sorteo mágico ✨';
+                zona.innerHTML = `<p class="error" style="margin-top:1rem">No se pudo crear el sorteo: ${escaparHTML(err.message)}</p>`;
             }
         }
 
         function copiarEnlace(url, btn) {
             const original = btn.textContent;
             const ok = () => {
-                btn.textContent = "✅ ¡Enlace copiado!";
+                btn.textContent = '✅ ¡Enlace copiado!';
                 setTimeout(() => btn.textContent = original, 2000);
             };
             if (navigator.clipboard && window.isSecureContext) {
@@ -616,33 +1177,65 @@
             return ok;
         }
 
-        /* ---------- Modo participante ---------- */
+        /* =====================================================
+           MODO PARTICIPANTE
+           ===================================================== */
 
         const botones = {};
+        let total = 0;
+
+        function htmlNormas(reglas) {
+            const items = [
+                '<li>🎲 <span>Reparto aleatorio hecho por el ordenador. Nadie conoce el resultado completo.</span></li>',
+                '<li>🎅 <span>A nadie puede tocarse a sí mismo.</span></li>',
+                reglas.evitarMismaFamilia
+                    ? '<li>🏠 <span>No se regala a nadie de tu propia familia.</span></li>'
+                    : '<li>🏠 <span>Se permite regalar dentro de la misma familia.</span></li>',
+                reglas.mismoGrupoEdad
+                    ? '<li>🧸 <span>Adultos regalan a adultos y niños a niños.</span></li>'
+                    : '<li>🎁 <span>Sorteo abierto entre mayores y peques.</span></li>',
+                '<li>🔒 <span>Cada regalo solo se puede abrir una vez, desde cualquier móvil.</span></li>'
+            ];
+            return `<details class="normas"><summary>📜 Normas del sorteo</summary><ul>${items.join('')}</ul></details>`;
+        }
 
         async function cargarSorteo() {
-            contenedor.innerHTML = `<p class="subtitle">⏳ Cargando sorteo...</p>`;
+            contenedor.innerHTML = cargandoHTML('Buscando los regalos bajo el árbol');
             try {
                 const filas = await rpc('estado_sorteo', { p_sorteo: sorteoId });
                 if (!filas || filas.length === 0) {
                     mostrarError('Este sorteo no existe. Revisa el enlace.');
                     return;
                 }
+                total = filas.length;
 
                 contenedor.innerHTML = `
-                    ${renderInstruccionesParticipante(filas[0].reglas || {})}
-                    <div class="grid" id="grid"></div>
+                    <div class="caramelo">
+                        🎁 Busca el regalo con tu nombre y ábrelo
+                        <small>⏱️ Solo podrás ver a quién te toca durante 5 segundos</small>
+                    </div>
+                    <div class="progreso">
+                        <span id="progreso-texto"></span>
+                        <div class="progreso-pista"><div class="progreso-barra" id="progreso-barra"></div></div>
+                    </div>
+                    <div class="regalos" id="regalos"></div>
+                    ${htmlNormas(filas[0].reglas || {})}
                 `;
-                const grid = document.getElementById('grid');
+                const grid = document.getElementById('regalos');
 
-                filas.forEach(({ nombre, visto }) => {
+                filas.forEach(({ nombre, visto }, i) => {
+                    const clase = 'p' + (i % 6);
                     const btn = document.createElement('button');
-                    btn.className = 'btn btn-person';
+                    btn.className = 'btn-regalo';
+                    btn.style.setProperty('--d', `${-(i * .45)}s`);
+                    btn.innerHTML = `${htmlRegalo(clase)}<span class="etiqueta"></span>`;
+                    btn.querySelector('.etiqueta').textContent = nombre;
                     btn.onclick = () => pedirConfirmacion(nombre);
-                    botones[nombre] = btn;
-                    marcarBoton(nombre, visto);
+                    botones[nombre] = { btn, clase };
                     grid.appendChild(btn);
+                    marcarBoton(nombre, visto);
                 });
+                pintarProgreso();
             } catch (err) {
                 mostrarError('No se pudo cargar el sorteo (' + err.message + '). Comprueba la conexión y recarga.');
             }
@@ -652,73 +1245,104 @@
             try {
                 const filas = await rpc('estado_sorteo', { p_sorteo: sorteoId });
                 (filas || []).forEach(({ nombre, visto }) => marcarBoton(nombre, visto));
+                pintarProgreso();
             } catch { /* sin conexión: se mantiene lo que hay */ }
         }
 
         function marcarBoton(nombre, visto) {
-            const btn = botones[nombre];
-            if (!btn) return;
-            btn.disabled = !!visto;
-            btn.textContent = visto ? `${nombre} ✓` : nombre;
+            const b = botones[nombre];
+            if (!b) return;
+            b.btn.disabled = !!visto;
+            b.btn.setAttribute('aria-label', visto ? `Regalo de ${nombre} (ya abierto)` : `Regalo de ${nombre}`);
+        }
+
+        function pintarProgreso() {
+            const abiertos = Object.values(botones).filter(b => b.btn.disabled).length;
+            const txt = document.getElementById('progreso-texto');
+            const barra = document.getElementById('progreso-barra');
+            if (!txt) return;
+            txt.textContent = abiertos === total
+                ? `🎉 ¡Los ${total} regalos están abiertos!`
+                : `🎁 ${abiertos} de ${total} regalos abiertos`;
+            barra.style.width = (total ? abiertos / total * 100 : 0) + '%';
         }
 
         function pedirConfirmacion(persona) {
-            const modalConfirm = document.getElementById('modal-confirm');
+            const modal = document.getElementById('modal-confirm');
             const btnConfirmar = document.getElementById('btn-confirmar-ver');
             document.getElementById('confirm-nombre').textContent = persona;
+            document.getElementById('confirm-regalo').innerHTML = htmlRegalo(botones[persona].clase);
             btnConfirmar.disabled = false;
-            btnConfirmar.textContent = 'Sí, ver (5s)';
-            modalConfirm.style.display = 'flex';
+            btnConfirmar.textContent = '🎁 ¡Soy yo, abrir!';
+            modal.classList.add('visible');
 
             btnConfirmar.onclick = async () => {
+                prepararAudio();
                 btnConfirmar.disabled = true;
-                btnConfirmar.textContent = '⏳';
+                btnConfirmar.textContent = '⏳ Abriendo…';
                 try {
                     const tocado = await rpc('revelar', { p_sorteo: sorteoId, p_nombre: persona });
                     cerrarConfirmacion();
                     marcarBoton(persona, true);
-                    revelar(tocado);
+                    pintarProgreso();
+                    revelar(tocado, botones[persona].clase);
                 } catch (err) {
                     cerrarConfirmacion();
                     if (err.message === 'YA_VISTO') {
                         marcarBoton(persona, true);
-                        alert(`${persona} ya ha visto su resultado. Si ha sido un error, avisa al organizador.`);
+                        pintarProgreso();
+                        alert(`El regalo de ${persona} ya se abrió. Si ha sido un error, avisa al organizador.`);
                     } else {
-                        alert('No se pudo consultar el resultado (' + err.message + '). Inténtalo de nuevo.');
+                        alert('No se pudo abrir el regalo (' + err.message + '). Inténtalo de nuevo.');
                     }
                 }
             };
         }
 
         function cerrarConfirmacion() {
-            document.getElementById('modal-confirm').style.display = 'none';
+            document.getElementById('modal-confirm').classList.remove('visible');
         }
 
-        function revelar(tocado) {
+        function revelar(tocado, clase) {
             const modal = document.getElementById('modal-reveal');
+            const escena = document.getElementById('escena');
+            const resultado = document.getElementById('resultado');
             const contador = document.getElementById('contador');
-            const bar = document.getElementById('progress-bar');
+            const anillo = document.getElementById('anillo-avance');
 
-            document.getElementById('resultado').textContent = tocado;
-            bar.style.transition = 'none';
-            bar.style.width = '100%';
-            modal.style.display = 'flex';
+            resultado.textContent = '';
+            escena.classList.remove('abierta', 'temblar');
+            document.getElementById('regalo-grande').innerHTML = htmlRegalo(clase);
+            anillo.style.transition = 'none';
+            anillo.style.strokeDashoffset = '0';
+            contador.textContent = '5';
+            modal.classList.add('visible');
 
-            void bar.offsetWidth;
-            bar.style.transition = 'width 5s linear';
-            bar.style.width = '0%';
+            void escena.offsetWidth;
+            escena.classList.add('temblar');
 
-            let segundos = 5;
-            contador.textContent = `Solo visible 5s · Se cerrará en ${segundos}s...`;
-            const intervalo = setInterval(() => {
-                segundos--;
-                contador.textContent = `Solo visible 5s · Se cerrará en ${segundos}s...`;
-                if (segundos <= 0) {
-                    clearInterval(intervalo);
-                    modal.style.display = 'none';
-                    document.getElementById('resultado').textContent = '';
-                }
-            }, 1000);
+            setTimeout(() => {
+                resultado.textContent = tocado;
+                escena.classList.add('abierta');
+                confeti();
+                campanitas();
+
+                void anillo.getBoundingClientRect();
+                anillo.style.transition = 'stroke-dashoffset 5s linear';
+                anillo.style.strokeDashoffset = '150.8';
+
+                let segundos = 5;
+                const intervalo = setInterval(() => {
+                    segundos--;
+                    contador.textContent = String(Math.max(segundos, 0));
+                    if (segundos <= 0) {
+                        clearInterval(intervalo);
+                        modal.classList.remove('visible');
+                        resultado.textContent = '';
+                        escena.classList.remove('abierta', 'temblar');
+                    }
+                }, 1000);
+            }, reducirMovimiento ? 0 : 950);
         }
     </script>
 </body>
