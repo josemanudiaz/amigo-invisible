@@ -3,6 +3,7 @@
     "evitarMismaFamilia": true,
     "mismoGrupoEdad": false
   },
+  "revelacion": "2026-12-25T00:00:00+01:00",
   "participantes": [
     { "nombre": "Jose (lolo)", "familia": 1, "grupo": "adulto" },
     { "nombre": "Yoli", "familia": 1, "grupo": "adulto" },
